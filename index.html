@@ -5,30 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fawn Moreau · Peintures horlogères sur mesure, Paris</title>
 <meta name="description" content="Je peins votre montre, à la main, dans l'univers qui lui ressemble. Peintures horlogères sur mesure à l'acrylique et à l'aquarelle, à Paris.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Fawn Moreau">
 <meta property="og:title" content="Fawn Moreau · Je peins votre montre">
 <meta property="og:description" content="Peintures horlogères sur mesure, à l'acrylique et à l'aquarelle. Paris.">
-<meta property="og:image" content="https://fawnmoreau.fr/images/m/saison-hiver.jpg">
+<meta property="og:image" content="https://fawnmoreau.fr/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Trois peintures de montres de Fawn Moreau">
 <meta property="og:url" content="https://fawnmoreau.fr/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://fawnmoreau.fr/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0f1115">
 <link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="preload" href="fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/geist-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" as="image" type="image/webp" imagesrcset="images/w/atelier-terre-640.webp 640w, images/w/atelier-terre-1000.webp 1000w" imagesizes="(max-width:900px) 125vw, 45vw" fetchpriority="high">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Fawn Moreau","jobTitle":"Peintre horlogère","url":"https://fawnmoreau.fr/","image":"https://fawnmoreau.fr/images/m/portrait-dessin.jpg","address":{"@type":"PostalAddress","addressLocality":"Paris","addressCountry":"FR"},"sameAs":["https://www.instagram.com/fawnmoreau/"]}
+</script>
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
 
 <header class="top" id="top">
   <span class="progress" id="progress" aria-hidden="true"></span>
-  <a href="#" class="logo">Fawn Moreau</a>
+  <a href="./" class="logo" id="logo">Fawn Moreau</a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <a href="#sur-mesure">Sur mesure</a>
     <a href="#oeuvres">Œuvres</a>
+    <a href="#saisons">Saisons</a>
     <a href="#carnet">Carnet</a>
     <a href="#apropos">À propos</a>
+    <a href="https://www.instagram.com/fawnmoreau/" target="_blank" rel="noopener" class="menu-ig">Instagram<span class="sr-only"> (s'ouvre dans un nouvel onglet)</span></a>
   </nav>
   <a href="#contact" class="top-cta">Commander</a>
   <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
@@ -38,9 +52,7 @@
 
   <!-- ACCUEIL -->
   <section class="hero">
-    <picture class="hero-img">
-      <img src="images/atelier-terre.jpg" alt="Fawn Moreau en train de peindre une montre dans son atelier" fetchpriority="high">
-    </picture>
+    <picture class="hero-img"><source type="image/webp" srcset="images/w/atelier-terre-400.webp 400w, images/w/atelier-terre-640.webp 640w, images/w/atelier-terre-1000.webp 1000w" sizes="(max-width:900px) 125vw, 45vw"><img src="images/atelier-terre.jpg" alt="Fawn Moreau en train de peindre une montre dans son atelier" fetchpriority="high" decoding="async"></picture>
     <div class="hero-txt">
       <p class="kicker">Peintre horlogère · Paris <span class="clock" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6"/><line class="ch" x1="10" y1="10" x2="10" y2="5.6"/><line class="cm" x1="10" y1="10" x2="10" y2="3.4"/><line class="cs" x1="10" y1="12" x2="10" y2="2.6"/><circle class="cc" cx="10" cy="10" r="1"/></svg><span id="clockTxt"></span></span></p>
       <h1>Votre montre,<br><em>son univers.</em></h1>
@@ -62,25 +74,25 @@
 
     <ol class="steps">
       <li>
-        <figure><img src="images/m/process-palette-rose.jpg" alt="Peinture d'une montre en or rose en cours, palette à la main" loading="lazy"></figure>
+        <figure><picture><source type="image/webp" srcset="images/w/process-palette-rose-400.webp 400w, images/w/process-palette-rose-640.webp 640w, images/w/process-palette-rose-1000.webp 1000w" sizes="(max-width:900px) 45vw, 22vw"><img src="images/m/process-palette-rose.jpg" alt="Peinture d'une montre en or rose en cours, palette à la main" loading="lazy" decoding="async"></picture></figure>
         <span class="n">01</span>
         <h3>Votre montre</h3>
         <p>Vous m'envoyez une photo de votre montre et ce qu'elle représente pour vous.</p>
       </li>
       <li>
-        <figure><img src="images/m/process-palette-lac.jpg" alt="Paysage de montagne et de lac peint, palette de couleurs" loading="lazy"></figure>
+        <figure><picture><source type="image/webp" srcset="images/w/process-palette-lac-400.webp 400w, images/w/process-palette-lac-640.webp 640w, images/w/process-palette-lac-1000.webp 1000w" sizes="(max-width:900px) 45vw, 22vw"><img src="images/m/process-palette-lac.jpg" alt="Paysage de montagne et de lac peint, palette de couleurs" loading="lazy" decoding="async"></picture></figure>
         <span class="n">02</span>
         <h3>Son univers</h3>
         <p>On choisit ensemble le format, la technique et l'univers : un paysage, une saison, une couleur, un souvenir.</p>
       </li>
       <li>
-        <figure><img src="images/m/process-hiver.jpg" alt="Main qui peint un cadran-paysage de montagnes" loading="lazy"></figure>
+        <figure><picture><source type="image/webp" srcset="images/w/process-hiver-400.webp 400w, images/w/process-hiver-640.webp 640w, images/w/process-hiver-1000.webp 1000w" sizes="(max-width:900px) 45vw, 22vw"><img src="images/m/process-hiver.jpg" alt="Main qui peint un cadran-paysage de montagnes" loading="lazy" decoding="async"></picture></figure>
         <span class="n">03</span>
         <h3>L'atelier</h3>
         <p>Je peins votre pièce à la main, en une à deux semaines. Le règlement se fait avant le début de la création.</p>
       </li>
       <li>
-        <figure><img src="images/m/oeuvre-encadree.jpg" alt="Peinture terminée d'une montre en or rose" loading="lazy"></figure>
+        <figure><picture><source type="image/webp" srcset="images/w/oeuvre-encadree-400.webp 400w, images/w/oeuvre-encadree-640.webp 640w, images/w/oeuvre-encadree-1000.webp 1000w" sizes="(max-width:900px) 45vw, 22vw"><img src="images/m/oeuvre-encadree.jpg" alt="Peinture terminée d'une montre en or rose" loading="lazy" decoding="async"></picture></figure>
         <span class="n">04</span>
         <h3>Chez vous</h3>
         <p>Votre peinture vous est expédiée quelques jours plus tard. La livraison est comprise.</p>
@@ -145,7 +157,7 @@
   <!-- A PROPOS -->
   <section class="block" id="apropos">
     <div class="about">
-      <figure class="about-img"><img src="images/m/portrait-dessin.jpg" alt="Portrait de Fawn Moreau en train de dessiner" loading="lazy"></figure>
+      <figure class="about-img"><picture><source type="image/webp" srcset="images/w/portrait-dessin-400.webp 400w, images/w/portrait-dessin-640.webp 640w, images/w/portrait-dessin-1000.webp 1000w" sizes="(max-width:900px) 90vw, 500px"><img src="images/m/portrait-dessin.jpg" alt="Portrait de Fawn Moreau en train de dessiner" loading="lazy" decoding="async"></picture></figure>
       <div class="about-txt">
         <p class="kicker">À propos</p>
         <h2>Je m'appelle Fawn.</h2>
@@ -155,15 +167,15 @@
       </div>
     </div>
     <div class="moments">
-      <figure><img src="images/m/event-montblanc.jpg" alt="Soirée Montblanc, peinture en direct" loading="lazy"><figcaption>Montblanc · peinture en direct</figcaption></figure>
-      <figure><img src="images/m/event-panerai.jpg" alt="Soirée Panerai, aquarelles pour les clients" loading="lazy"><figcaption>Panerai · aquarelles sur place</figcaption></figure>
-      <figure><img src="images/m/presse-revue-des-montres.jpg" alt="Article de La Revue des Montres" loading="lazy"><figcaption>La Revue des Montres · n°280</figcaption></figure>
+      <figure><picture><source type="image/webp" srcset="images/w/event-montblanc-400.webp 400w, images/w/event-montblanc-640.webp 640w, images/w/event-montblanc-1000.webp 1000w" sizes="(max-width:900px) 45vw, 360px"><img src="images/m/event-montblanc.jpg" alt="Soirée Montblanc, peinture en direct" loading="lazy" decoding="async"></picture><figcaption>Montblanc · peinture en direct</figcaption></figure>
+      <figure><picture><source type="image/webp" srcset="images/w/event-panerai-400.webp 400w, images/w/event-panerai-640.webp 640w, images/w/event-panerai-1000.webp 1000w" sizes="(max-width:900px) 45vw, 360px"><img src="images/m/event-panerai.jpg" alt="Soirée Panerai, aquarelles pour les clients" loading="lazy" decoding="async"></picture><figcaption>Panerai · aquarelles sur place</figcaption></figure>
+      <figure><picture><source type="image/webp" srcset="images/w/presse-revue-des-montres-400.webp 400w, images/w/presse-revue-des-montres-640.webp 640w, images/w/presse-revue-des-montres-1000.webp 1000w" sizes="(max-width:900px) 90vw, 360px"><img src="images/m/presse-revue-des-montres.jpg" alt="Article de La Revue des Montres" loading="lazy" decoding="async"></picture><figcaption>La Revue des Montres · n°280</figcaption></figure>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
-    <img src="images/m/saison-hiver.jpg" alt="" class="contact-bg" loading="lazy">
+    <figure class="contact-img"><picture><source type="image/webp" srcset="images/w/atelier-nuages-400.webp 400w, images/w/atelier-nuages-640.webp 640w, images/w/atelier-nuages-1000.webp 1000w" sizes="(max-width:900px) 90vw, 440px"><img src="images/m/atelier-nuages.jpg" alt="" loading="lazy" decoding="async"></picture></figure>
     <div class="contact-txt">
       <p class="kicker">Commande</p>
       <h2>Parlons de<br><em>votre montre.</em></h2>

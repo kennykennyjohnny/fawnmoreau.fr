@@ -1,139 +1,134 @@
-/* Animations du site. Tout est désactivé si l'appareil demande moins d'animations. */
+/*
+  Mouvement du site. Quatre règles :
+  1. Une seule vraie entrée en scène : l'accueil.
+  2. Une section apparaît d'un seul geste (titre et texte ensemble), jamais élément par élément.
+  3. Les photos ne bougent presque pas. Trois moments seulement ont leur propre mouvement,
+     choisi pour ce qu'il raconte : les Saisons (le temps qui passe, de gauche à droite),
+     le portrait de Fawn (un rideau) et la photo de l'atelier en bas (elle se pose lentement).
+  4. Rien ne bouge si l'appareil demande moins d'animations.
+*/
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = (id) => document.getElementById(id);
-  const isDesk = () => innerWidth > 900;
+  const desk = matchMedia("(min-width: 901px)");
 
   /* Horloge vivante, heure de Paris (fonctionne même sans animations) */
   const clock = document.querySelector(".clock");
   if (clock) {
     const h = clock.querySelector(".ch"), m = clock.querySelector(".cm"), s = clock.querySelector(".cs");
+    const fmt = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
     let secTurns = 0, lastSec = -1;
     const tick = () => {
-      const p = new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })
-        .formatToParts(new Date()).reduce((o, x) => ((o[x.type] = +x.value || x.value), o), {});
+      const p = fmt.formatToParts(new Date()).reduce((o, x) => ((o[x.type] = x.value), o), {});
       const hh = +p.hour % 24, mm = +p.minute, ss = +p.second;
       if (ss < lastSec) secTurns++;
       lastSec = ss;
       h.style.transform = `rotate(${(hh % 12) * 30 + mm * 0.5}deg)`;
       m.style.transform = `rotate(${mm * 6 + ss * 0.1}deg)`;
       s.style.transform = `rotate(${secTurns * 360 + ss * 6}deg)`;
-      $("clockTxt").textContent = `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+      $("clockTxt").textContent = `${p.hour}:${p.minute}`;
     };
     tick(); setInterval(tick, 1000);
   }
 
-  /* Bandeau de mots */
+  /* Bandeau de mots (le défilement lui-même est en CSS) */
   const words = ["Acrylique", "Aquarelle", "Sur mesure", "Pièces uniques", "Univers horlogers", "Paris"];
-  const track = $("track");
   const run = words.map((w, i) => `<span class="${i % 2 ? "it" : ""}">${w}</span><b class="dial"></b>`).join("");
-  track.innerHTML = run + run + run + run;
+  $("track").innerHTML = run + run + run + run;
 
-  if (reduce) { root.classList.add("still"); return; }
+  if (reduce || !("IntersectionObserver" in window)) return;
   root.classList.add("motion");
 
-  /* Titres : découpe en lignes pour l'effet rideau */
-  document.querySelectorAll(".hero h1, .intro h2, .about h2, .contact h2").forEach((h) => {
-    const lines = h.innerHTML.split(/<br\s*\/?>/i);
-    h.innerHTML = lines.map((l, i) => `<span class="line" style="--i:${i}"><span>${l.trim()}</span></span>`).join("");
-    h.classList.add("rvh");
+  /* Titres : découpe en lignes pour qu'elles montent l'une après l'autre */
+  document.querySelectorAll(".hero h1, .intro h2, .about h2, .contact h2").forEach((t) => {
+    t.innerHTML = t.innerHTML.split(/<br\s*\/?>/i)
+      .map((l, i) => `<span class="line" style="--i:${i}"><span>${l.trim()}</span></span>`).join("");
   });
 
-  /* Éléments qui apparaissent au défilement */
-  const fade = ".intro .kicker, .intro p:not(.kicker), .steps .n, .steps h3, .steps p, .formats, .about-txt p, .moments figcaption, .contact p, .contact .btn, .gallery figcaption, .seasons figcaption, .strip figcaption, .center .btn";
-  const imgs = ".steps figure, .gallery figure, .seasons figure, .strip figure, .about-img, .moments figure, .contact-bg";
-  document.querySelectorAll(fade).forEach((el) => el.classList.add("rv"));
-  document.querySelectorAll(imgs).forEach((el) => el.classList.add("rvi"));
-  document.querySelector(".about-img")?.classList.add("curtain");
-
-  // léger décalage entre colonnes d'une même rangée
-  const stagger = (sel, cols) => document.querySelectorAll(sel).forEach((el, i) => el.style.setProperty("--d", `${(i % cols()) * 0.06}s`));
-  stagger(".steps li figure", () => (isDesk() ? 4 : 2));
-  stagger(".gallery figure", () => (isDesk() ? 4 : 2));
-  stagger(".seasons figure", () => (isDesk() ? 4 : 2));
-  stagger(".strip figure", () => 3);
-  stagger(".moments figure", () => 3);
-
-  // une image masquée n'est jamais « visible » pour le navigateur : on surveille donc son conteneur
-  const watched = new Map();
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
+  /* Ce qui se révèle, et comment */
+  const plan = [
+    [".intro, .about-txt, .contact-txt", "text"],   // un bloc de texte entier
+    [".steps li", "rise"],                           // les 4 étapes, en séquence
+    [".formats", "draw"],                            // le trait se trace, les prix apparaissent
+    [".seasons figure", "wipe"],                     // le temps passe, de gauche à droite
+    [".about-img", "curtain"],                       // le portrait
+    [".contact-img", "settle"],                      // l'atelier se pose
+  ];
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
     if (!e.isIntersecting) return;
-    const t = watched.get(e.target) || e.target;
-    t.classList.add("in");
-    if (t.classList.contains("formats")) countUp(t);
+    e.target.classList.add("in");
     io.unobserve(e.target);
-  }), { rootMargin: "0px 0px -10% 0px", threshold: 0.01 });
-  document.querySelectorAll(".rv, .rvi, .rvh").forEach((el) => {
-    if (el.closest(".hero")) return;
-    const w = el.classList.contains("rvi") ? el.parentElement : el;
-    watched.set(w, el); io.observe(w);
+  }), { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
+
+  for (const [sel, kind] of plan) {
+    document.querySelectorAll(sel).forEach((el) => { el.classList.add("rv", `rv-${kind}`); io.observe(el); });
+  }
+  // décalage par colonne : une rangée se lit de gauche à droite, jamais en cascade sur toute la page
+  const byColumn = (sel, step) => document.querySelectorAll(sel).forEach((el, i) => {
+    el.style.setProperty("--d", `${(i % (desk.matches ? 4 : 2)) * step}s`);
+  });
+  byColumn(".steps li", 0.09);
+  byColumn(".seasons figure", 0.16);
+
+  /* Les vignettes chargées tard apparaissent en douceur au lieu de surgir d'un coup */
+  document.querySelectorAll('img[loading="lazy"]').forEach((im) => {
+    if (im.complete) return;
+    im.classList.add("loading");
+    const done = () => im.classList.remove("loading");
+    im.addEventListener("load", done, { once: true });
+    im.addEventListener("error", done, { once: true });
   });
 
-  /* Prix qui défilent jusqu'à leur valeur */
-  function countUp(box) {
-    box.querySelectorAll(".f-price").forEach((p, k) => {
-      const target = parseInt(p.textContent, 10), t0 = performance.now() + k * 120, dur = 1400;
-      const step = (t) => {
-        const x = Math.min(1, Math.max(0, (t - t0) / dur)), e = 1 - Math.pow(1 - x, 4);
-        p.textContent = `${Math.round(target * e)} €`;
-        if (x < 1) requestAnimationFrame(step);
-      };
-      p.textContent = "0 €"; requestAnimationFrame(step);
-    });
-  }
+  /* Ouverture de page : on n'attend pas les polices plus de 300 ms */
+  let started = false;
+  const start = () => { if (!started) { started = true; requestAnimationFrame(() => document.body.classList.add("ready")); } };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(start);
+  setTimeout(start, 300);
 
-  /* Ouverture de page */
-  const start = () => requestAnimationFrame(() => document.body.classList.add("ready"));
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
-  setTimeout(start, 1200);
-
-  /* Défilement : barre de progression, en-tête qui se range, profondeur, bandeau */
+  /* Défilement : barre de progression, en-tête qui se range, légère profondeur */
   const header = $("top"), bar = $("progress"), heroImg = document.querySelector(".hero-img img");
-  const gal = $("gallery");
-  let lastY = scrollY, vel = 0, mx = 0, ticking = false;
+  const evens = [...document.querySelectorAll("#gallery > :nth-child(even)")], gal = $("gallery");
+  let lastY = scrollY, ticking = false;
   const onScroll = () => {
     const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    const down = y > lastY;
-    header.classList.toggle("hide", down && y > innerHeight && !document.body.classList.contains("nav-open"));
-    vel += Math.min(40, Math.abs(y - lastY)) * 0.06;
+    if (!document.body.classList.contains("nav-open")) header.classList.toggle("hide", y > lastY && y > innerHeight);
     lastY = y;
-    if (heroImg && y < innerHeight * 1.2) heroImg.style.transform = `translate3d(0, ${y * (isDesk() ? 0.12 : 0.28)}px, 0) scale(1.06)`;
-    if (isDesk() && gal) {
+    if (heroImg && y < innerHeight * 1.2) heroImg.style.transform = `translate3d(0, ${y * (desk.matches ? 0.1 : 0.18)}px, 0)`;
+    if (desk.matches) {
+      // dans la galerie, une colonne sur deux glisse un peu moins vite : un relief discret
       const r = gal.getBoundingClientRect();
       if (r.bottom > 0 && r.top < innerHeight) {
         const p = (innerHeight - r.top) / (innerHeight + r.height);
-        gal.querySelectorAll(":scope > :nth-child(even)").forEach((el) => (el.style.transform = `translate3d(0, ${(0.5 - p) * 70}px, 0)`));
+        evens.forEach((el) => (el.style.transform = `translate3d(0, ${(0.5 - p) * 40}px, 0)`));
       }
     }
     ticking = false;
   };
   addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  desk.addEventListener("change", () => { evens.forEach((el) => (el.style.transform = "")); onScroll(); });
   onScroll();
-
-  const loop = () => {
-    vel *= 0.92;
-    mx -= 0.45 + vel;
-    const w = track.scrollWidth / 4;
-    if (-mx >= w) mx += w;
-    track.style.transform = `translate3d(${mx}px, 0, 0)`;
-    requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
 
   /* Curseur « Voir » sur les œuvres (souris uniquement) */
   if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
     const c = $("cursor");
     root.classList.add("has-cursor");
-    let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
-    addEventListener("mousemove", (e) => { x = e.clientX; y = e.clientY; }, { passive: true });
-    document.addEventListener("mouseover", (e) => c.classList.toggle("on", !!e.target.closest(".tile")));
+    let x = 0, y = 0, cx = 0, cy = 0, on = false, raf = 0;
     const follow = () => {
-      cx += (x - cx) * 0.18; cy += (y - cy) * 0.18;
+      cx += (x - cx) * 0.2; cy += (y - cy) * 0.2;
       c.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-      requestAnimationFrame(follow);
+      raf = Math.abs(x - cx) + Math.abs(y - cy) > 0.3 || on ? requestAnimationFrame(follow) : 0;
     };
-    requestAnimationFrame(follow);
+    addEventListener("mousemove", (e) => {
+      x = e.clientX; y = e.clientY;
+      if (!on) { cx = x; cy = y; }
+      if (!raf) raf = requestAnimationFrame(follow);
+    }, { passive: true });
+    document.addEventListener("mouseover", (e) => {
+      on = !!e.target.closest(".tile");
+      c.classList.toggle("on", on);
+      if (on && !raf) raf = requestAnimationFrame(follow);
+    });
   }
 })();

@@ -1,6 +1,6 @@
 /*
-  Pour ajouter une œuvre : déposer l'image dans images/ (grande) et images/m/ (640 px de large),
-  puis ajouter une ligne ci-dessous.  [nom-du-fichier, "Légende"]
+  Pour ajouter une œuvre : déposer l'image (1000 px de large, en .jpg) dans images/,
+  lancer « python3 outils/images.py », puis ajouter une ligne ci-dessous.  [nom-du-fichier, "Légende"]
 */
 const OEUVRES = [
   ["oeuvre-reverso-ocean", "Reverso, l'océan"],
@@ -45,6 +45,11 @@ if (navEntry && navEntry.type === "reload") {
   toTop();
   addEventListener("load", toTop);
 }
+// le logo remonte en haut de la page au lieu de la recharger
+document.getElementById("logo").addEventListener("click", (e) => {
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+});
 // les liens du menu font défiler la page sans laisser de #ancre dans l'adresse
 document.addEventListener("click", (e) => {
   const a = e.target.closest('a[href^="#"]');
@@ -52,35 +57,37 @@ document.addEventListener("click", (e) => {
 });
 
 const $ = (id) => document.getElementById(id);
-const all = [];
-const fig = ([file, cap]) => {
-  const i = all.push({ file, cap }) - 1;
-  return `<div role="listitem"><figure>
-    <button type="button" class="tile" data-i="${i}" aria-label="Agrandir : ${cap}">
-      <img src="images/m/${file}.jpg" alt="" loading="lazy">
-    </button>
-    <figcaption>${cap}</figcaption></figure></div>`;
+const webp = (file) => [400, 640, 1000].map((w) => `images/w/${file}-${w}.webp ${w}w`).join(", ");
+const COLLECTIONS = {
+  gallery: { name: "Œuvres", items: OEUVRES, sizes: "(max-width:900px) 46vw, 23vw" },
+  seasons: { name: "Les Quatre Saisons", items: SAISONS, sizes: "(max-width:900px) 46vw, 23vw" },
+  strip: { name: "Carnet", items: CARNET, sizes: "(max-width:900px) 68vw, 20vw" },
 };
-
-$("gallery").innerHTML = OEUVRES.map(fig).join("");
-$("seasons").innerHTML = SAISONS.map(fig).join("");
-$("strip").innerHTML = CARNET.map(fig).join("");
+for (const [id, c] of Object.entries(COLLECTIONS)) {
+  $(id).innerHTML = c.items.map(([file, cap], i) => `<div role="listitem"><figure>
+    <button type="button" class="tile" data-c="${id}" data-i="${i}" aria-label="Agrandir : ${cap}">
+      <picture><source type="image/webp" srcset="${webp(file)}" sizes="${c.sizes}"><img src="images/m/${file}.jpg" alt="" loading="lazy" decoding="async"></picture>
+    </button>
+    <figcaption>${cap}</figcaption></figure></div>`).join("");
+}
 $("year").textContent = new Date().getFullYear();
 
 /* Visionneuse : fermeture par le bouton, Échap, le bouton retour du téléphone,
    un glissement vers le bas ou un tap à côté de l'image */
 const lb = $("lightbox"), img = $("lbImg");
-let cur = 0, lastFocus = null, isOpen = false;
+let col = COLLECTIONS.gallery, cur = 0, lastFocus = null, isOpen = false;
+const big = (file) => `images/w/${file}-1000.webp`;
 const show = (i) => {
-  cur = (i + all.length) % all.length;
-  const idx = cur, full = new Image();
-  img.src = `images/m/${all[idx].file}.jpg`;
-  full.onload = () => { if (cur === idx) img.src = full.src; };
-  full.src = `images/${all[idx].file}.jpg`;
-  img.alt = `${all[cur].cap}, peinture de Fawn Moreau`;
-  $("lbCap").textContent = all[cur].cap;
-  $("lbCount").textContent = `${cur + 1} / ${all.length}`;
-  [cur - 1, cur + 1].forEach((k) => { const j = (k + all.length) % all.length; new Image().src = `images/${all[j].file}.jpg`; });
+  const list = col.items;
+  cur = (i + list.length) % list.length;
+  const idx = cur, [file, cap] = list[idx], full = new Image();
+  img.src = `images/w/${file}-640.webp`;
+  full.onload = () => { if (cur === idx && isOpen) img.src = full.src; };
+  full.src = big(file);
+  img.alt = `${cap}, ${col === COLLECTIONS.strip ? "aquarelle" : "peinture"} de Fawn Moreau`;
+  $("lbCap").textContent = cap;
+  $("lbCount").textContent = `${col.name} · ${cur + 1} / ${list.length}`;
+  [cur - 1, cur + 1].forEach((k) => { new Image().src = big(list[(k + list.length) % list.length][0]); });
 };
 const open = (i, trigger) => {
   lastFocus = trigger || document.activeElement;
@@ -119,7 +126,7 @@ const close = (fromHistory = false) => {
 addEventListener("popstate", () => close(true));
 document.addEventListener("click", (e) => {
   const t = e.target.closest(".tile");
-  if (t) open(+t.dataset.i, t);
+  if (t) { col = COLLECTIONS[t.dataset.c]; open(+t.dataset.i, t); }
 });
 $("lbClose").addEventListener("click", () => close());
 $("lbNext").addEventListener("click", () => show(cur + 1));
@@ -159,12 +166,14 @@ lb.addEventListener("touchend", (e) => {
 const burger = $("burger"), menu = $("menu");
 const setMenu = (o) => {
   document.body.classList.toggle("nav-open", o);
+  if (o) $("top").classList.remove("hide");
   burger.setAttribute("aria-expanded", o);
   burger.setAttribute("aria-label", o ? "Fermer le menu" : "Ouvrir le menu");
   if (o) menu.querySelector("a").focus();
 };
 burger.onclick = () => setMenu(!document.body.classList.contains("nav-open"));
-menu.addEventListener("click", (e) => { if (e.target.tagName === "A") setMenu(false); });
+menu.addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
+matchMedia("(min-width: 901px)").addEventListener("change", (m) => { if (m.matches) setMenu(false); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { setMenu(false); burger.focus(); } });
 const header = $("top");
 const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 0.6);
