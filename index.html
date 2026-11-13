@@ -3,167 +3,185 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fawn Moreau — Peintre horlogère, Paris</title>
-<meta name="description" content="Fawn Moreau, artiste peintre à Paris. Des montres d'exception réinventées dans des univers imaginaires, à l'acrylique et à l'aquarelle. Œuvres originales et commandes sur mesure.">
-<meta property="og:title" content="Fawn Moreau — Le temps devient art">
-<meta property="og:description" content="Peintures horlogères originales et commandes sur mesure, Paris.">
+<title>Fawn Moreau · Peintures horlogères sur mesure, Paris</title>
+<meta name="description" content="Je peins votre montre, à la main, dans l'univers qui lui ressemble. Peintures horlogères sur mesure à l'acrylique et à l'aquarelle, à Paris.">
+<meta property="og:title" content="Fawn Moreau · Je peins votre montre">
+<meta property="og:description" content="Peintures horlogères sur mesure, à l'acrylique et à l'aquarelle. Paris.">
+<meta property="og:image" content="https://fawnmoreau.fr/images/m/saison-hiver.jpg">
 <meta property="og:url" content="https://fawnmoreau.fr/">
-<meta property="og:type" content="website">
 <link rel="canonical" href="https://fawnmoreau.fr/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="nav" id="nav">
-  <a href="#top" class="brand">Fawn Moreau</a>
-  <button class="burger" aria-label="Menu" aria-expanded="false" id="burger"><span></span><span></span></button>
-  <nav class="links" id="links">
-    <a href="#univers">Univers</a>
-    <a href="#saisons">4 Saisons</a>
+<header class="top" id="top">
+  <a href="#" class="logo">Fawn Moreau</a>
+  <nav class="menu" id="menu">
+    <a href="#sur-mesure">Sur mesure</a>
+    <a href="#oeuvres">Œuvres</a>
     <a href="#carnet">Carnet</a>
     <a href="#apropos">À propos</a>
-    <a href="#formules">Formules</a>
-    <a href="#commander" class="pill">Commander</a>
   </nav>
+  <a href="#contact" class="top-cta">Commander</a>
+  <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span></button>
 </header>
 
-<main id="top">
+<main>
 
-  <!-- HERO -->
+  <!-- ACCUEIL -->
   <section class="hero">
-    <div class="hero-text">
-      <p class="eyebrow">Peintre horlogère · Paris</p>
-      <h1>Le temps<br><em>devient art.</em></h1>
-      <p class="lead">Des montres d'exception sorties de leur fonction, et plongées dans des univers imaginaires. Œuvres originales à l'acrylique et à l'aquarelle, pièces uniques et commandes sur mesure.</p>
-      <div class="cta">
-        <a href="#univers" class="btn">Découvrir l'univers</a>
-        <a href="#commander" class="btn ghost">Commander une œuvre</a>
+    <picture class="hero-img">
+      <img src="images/atelier-terre.jpg" alt="Fawn Moreau en train de peindre une montre dans son atelier" fetchpriority="high">
+    </picture>
+    <div class="hero-txt">
+      <p class="kicker">Peintre horlogère · Paris</p>
+      <h1>Je peins<br><em>votre montre.</em></h1>
+      <p class="lead">Chaque montre a son histoire. Je l'imagine dans l'univers qui lui ressemble et je la peins à la main, à l'acrylique ou à l'aquarelle.</p>
+      <div class="actions">
+        <a href="#sur-mesure" class="btn">Commander une peinture</a>
+        <a href="#oeuvres" class="txt-link">Voir mes œuvres</a>
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true" id="heroArt"></div>
   </section>
 
-  <!-- UNIVERS -->
-  <section class="section" id="univers">
-    <div class="section-head">
-      <p class="eyebrow">Créations · Acrylique</p>
-      <h2>Les univers horlogers</h2>
-      <p>Depuis 2025, Fawn ne reproduit plus seulement les montres : elle les détourne. Le cadran devient un paysage, un ciel, une saison, un rêve. Formats A3 et A2.</p>
+  <!-- SUR MESURE -->
+  <section class="block" id="sur-mesure">
+    <div class="intro">
+      <p class="kicker">Sur mesure</p>
+      <h2>Votre montre,<br><em>son univers.</em></h2>
+      <p>La plupart de mes toiles naissent d'une commande. Une montre héritée, offerte, rêvée : vous me la confiez, j'imagine le monde dans lequel elle vit, et je la peins pour vous.</p>
     </div>
-    <div class="grid" id="gridUnivers"></div>
+
+    <ol class="steps">
+      <li>
+        <figure><img src="images/m/process-palette-rose.jpg" alt="Peinture d'une montre en or rose en cours, palette à la main" loading="lazy"></figure>
+        <span class="n">01</span>
+        <h3>Votre montre</h3>
+        <p>Vous m'envoyez une photo de votre montre et ce qu'elle représente pour vous.</p>
+      </li>
+      <li>
+        <figure><img src="images/m/process-palette-lac.jpg" alt="Paysage de montagne et de lac peint, palette de couleurs" loading="lazy"></figure>
+        <span class="n">02</span>
+        <h3>Son univers</h3>
+        <p>On choisit ensemble le format, la technique et l'univers : un paysage, une saison, une couleur, un souvenir.</p>
+      </li>
+      <li>
+        <figure><img src="images/m/process-hiver.jpg" alt="Main qui peint un cadran-paysage de montagnes" loading="lazy"></figure>
+        <span class="n">03</span>
+        <h3>L'atelier</h3>
+        <p>Je peins votre pièce à la main, en une à deux semaines. Le règlement se fait avant le début de la création.</p>
+      </li>
+      <li>
+        <figure><img src="images/m/oeuvre-encadree.jpg" alt="Peinture terminée d'une montre en or rose" loading="lazy"></figure>
+        <span class="n">04</span>
+        <h3>Chez vous</h3>
+        <p>Votre peinture vous est expédiée quelques jours plus tard. La livraison est comprise.</p>
+      </li>
+    </ol>
+
+    <div class="formats">
+      <div class="format">
+        <p class="f-tech">Aquarelle</p>
+        <p class="f-name">A3 · fond blanc</p>
+        <p class="f-price">200 €</p>
+      </div>
+      <div class="format">
+        <p class="f-tech">Acrylique</p>
+        <p class="f-name">A3 · avec univers</p>
+        <p class="f-price">400 €</p>
+      </div>
+      <div class="format">
+        <p class="f-tech">Acrylique</p>
+        <p class="f-name">A2 · avec univers</p>
+        <p class="f-price">800 €</p>
+      </div>
+    </div>
+    <p class="center"><a href="#contact" class="btn">Parler de ma montre</a></p>
+  </section>
+
+  <!-- OEUVRES -->
+  <section class="block dark" id="oeuvres">
+    <div class="intro">
+      <p class="kicker">Œuvres</p>
+      <h2>Mes univers</h2>
+      <p>Je dessine des montres depuis mes 12 ans. Aujourd'hui, je les sors de leur fonction pour les emmener dans des mondes sortis de ma tête.</p>
+    </div>
+    <div class="gallery" id="gallery"></div>
   </section>
 
   <!-- 4 SAISONS -->
-  <section class="section saisons" id="saisons">
-    <div class="section-head">
-      <p class="eyebrow">Collection</p>
-      <h2>Les 4 Saisons</h2>
-      <p>Quatre tableaux, quatre montres, quatre saisons. Une collection exposée à Paris chez MMC.</p>
+  <section class="block" id="saisons">
+    <div class="intro">
+      <p class="kicker">Collection</p>
+      <h2>Les Quatre Saisons</h2>
+      <p>Quatre montres, quatre saisons. Une collection exposée chez MMC, à Paris.</p>
     </div>
     <div class="seasons" id="seasons"></div>
-    <p class="center"><a class="link" href="https://www.instagram.com/fawnmoreau/reel/DU3Jw-JjEvV/" target="_blank" rel="noopener">Voir la collection réunie →</a></p>
   </section>
 
   <!-- CARNET -->
-  <section class="section carnet" id="carnet">
-    <div class="section-head">
-      <p class="eyebrow">Aquarelle · Depuis l'enfance</p>
-      <h2>Le carnet de montres</h2>
-      <p>Un journal intime d'icônes horlogères, peint page après page depuis des années. Des Nautilus aux Reverso, de F.P. Journe à Van Cleef &amp; Arpels.</p>
+  <section class="block paper" id="carnet">
+    <div class="carnet-wrap">
+      <div class="intro">
+        <p class="kicker">Aquarelle</p>
+        <h2>Mon carnet</h2>
+        <p>Depuis des années, je remplis un carnet d'aquarelles des montres qui me font rêver. Il n'est pas à vendre, mais c'est là que tout a commencé.</p>
+        <p>Je peins aussi votre montre à l'aquarelle, sur fond blanc, au format A3.</p>
+      </div>
+      <div class="strip" id="strip"></div>
     </div>
-    <div class="ribbon" id="carnetList"></div>
   </section>
 
   <!-- A PROPOS -->
-  <section class="section about" id="apropos">
-    <div class="about-grid">
-      <div class="about-photo" id="aboutPhoto">
-        <span>FM</span>
-      </div>
-      <div>
-        <p class="eyebrow">À propos</p>
-        <h2>Fawn Moreau</h2>
-        <p>Fawn dessine des montres depuis ses 12 ans. Après plusieurs années comme cheffe de projet dans l'horlogerie à Genève, elle se consacre aujourd'hui à son propre univers, entre peinture et haute horlogerie.</p>
-        <p>Son approche : utiliser le dessin comme langage, explorer l'horlogerie autrement, et surtout <em>passer de la reproduction à la création</em>. Chaque pièce porte son énergie, son récit, son émotion.</p>
-        <p>Basée à Paris, elle partage son processus de création sur Instagram et anime des soirées de peinture en direct pour les maisons horlogères.</p>
-        <a class="link" href="https://www.instagram.com/fawnmoreau/" target="_blank" rel="noopener">Suivre l'atelier sur Instagram →</a>
+  <section class="block" id="apropos">
+    <div class="about">
+      <figure class="about-img"><img src="images/m/portrait-dessin.jpg" alt="Portrait de Fawn Moreau en train de dessiner" loading="lazy"></figure>
+      <div class="about-txt">
+        <p class="kicker">À propos</p>
+        <h2>Je m'appelle Fawn.</h2>
+        <p>J'ai travaillé plusieurs années dans l'horlogerie à Genève, comme cheffe de projet, avec toujours un carnet à portée de main. Aujourd'hui, je me consacre à la peinture.</p>
+        <p>Ma démarche : utiliser le dessin comme langage, regarder l'horlogerie autrement, et passer de la reproduction à la création.</p>
+        <p>J'ai peint en direct pour Montblanc et Panerai, et La Revue des Montres m'a consacré un portrait dans son numéro 280.</p>
       </div>
     </div>
-  </section>
-
-  <!-- REFERENCES -->
-  <section class="section refs">
-    <p class="eyebrow center">Ils lui ont fait confiance</p>
-    <ul class="ref-list">
-      <li><strong>Montblanc</strong><span>Aquarelles en direct · soirée Minerva</span></li>
-      <li><strong>Panerai</strong><span>Personnalisation de montres à l'aquarelle</span></li>
-      <li><strong>La Revue des Montres</strong><span>Portrait · n°280</span></li>
-      <li><strong>F.P. Journe Collectors Club</strong><span>Œuvre pour une vente caritative</span></li>
-      <li><strong>Boesner</strong><span>Portrait d'artiste</span></li>
-      <li><strong>MMC Paris</strong><span>Exposition · Collection 4 Saisons</span></li>
-    </ul>
-  </section>
-
-  <!-- FORMULES -->
-  <section class="section" id="formules">
-    <div class="section-head">
-      <p class="eyebrow">Commandes sur mesure</p>
-      <h2>Formules</h2>
-      <p>Votre montre, peinte à la main. Chaque pièce est unique et réalisée avec une grande attention aux détails. Livraison comprise.</p>
+    <div class="moments">
+      <figure><img src="images/m/event-montblanc.jpg" alt="Soirée Montblanc, peinture en direct" loading="lazy"><figcaption>Montblanc · peinture en direct</figcaption></figure>
+      <figure><img src="images/m/event-panerai.jpg" alt="Soirée Panerai, aquarelles pour les clients" loading="lazy"><figcaption>Panerai · aquarelles sur place</figcaption></figure>
+      <figure><img src="images/m/presse-revue-des-montres.jpg" alt="Article de La Revue des Montres" loading="lazy"><figcaption>La Revue des Montres · n°280</figcaption></figure>
     </div>
-    <div class="offers">
-      <article class="offer">
-        <p class="tech">Aquarelle</p>
-        <h3>Fond blanc</h3>
-        <p class="fmt">Format A3</p>
-        <p class="price">200 €</p>
-        <p class="desc">Le trait et la lumière de l'aquarelle, la montre seule sur le papier.</p>
-      </article>
-      <article class="offer featured">
-        <p class="tech">Acrylique</p>
-        <h3>Avec univers</h3>
-        <p class="fmt">Format A3</p>
-        <p class="price">400 €</p>
-        <p class="desc">Votre montre plongée dans un univers imaginé pour elle.</p>
-      </article>
-      <article class="offer">
-        <p class="tech">Acrylique</p>
-        <h3>Avec univers</h3>
-        <p class="fmt">Format A2</p>
-        <p class="price">800 €</p>
-        <p class="desc">Le grand format, pour une pièce qui habite un mur.</p>
-      </article>
-    </div>
-    <ol class="steps">
-      <li><span>1</span>Vous envoyez votre montre (photo) et vos envies.</li>
-      <li><span>2</span>Le règlement se fait avant le début de la création.</li>
-      <li><span>3</span>Création en 1 à 2 semaines, puis quelques jours de livraison.</li>
-    </ol>
   </section>
 
-  <!-- COMMANDER -->
-  <section class="section commander" id="commander">
-    <h2>Une montre, <em>un univers.</em></h2>
-    <p>Pour acheter une œuvre disponible ou passer une commande sur mesure, écrivez directement à Fawn.</p>
-    <div class="cta center">
-      <a href="https://ig.me/m/fawnmoreau" class="btn" target="_blank" rel="noopener">Écrire sur Instagram</a>
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <img src="images/m/saison-hiver.jpg" alt="" class="contact-bg" loading="lazy">
+    <div class="contact-txt">
+      <p class="kicker">Commande</p>
+      <h2>Parlons de<br><em>votre montre.</em></h2>
+      <p>Pour une commande sur mesure ou pour acquérir une œuvre, écrivez-moi directement sur Instagram.</p>
+      <a href="https://ig.me/m/fawnmoreau" target="_blank" rel="noopener" class="btn light">M'écrire sur Instagram</a>
     </div>
   </section>
 
 </main>
 
-<footer class="footer">
-  <p class="brand">Fawn Moreau</p>
+<footer class="foot">
+  <p class="logo">Fawn Moreau</p>
   <p>Peintre horlogère · Paris</p>
-  <p><a href="https://www.instagram.com/fawnmoreau/" target="_blank" rel="noopener">Instagram</a> · <a href="mentions-legales.html">Mentions légales</a></p>
-  <p class="small">© <span id="year"></span> Fawn Moreau — Œuvres protégées, reproduction interdite.</p>
+  <p><a href="https://www.instagram.com/fawnmoreau/" target="_blank" rel="noopener">Instagram</a><span class="sep"></span><a href="mentions-legales.html">Mentions légales</a></p>
+  <p class="small">© <span id="year"></span> Fawn Moreau. Œuvres protégées, reproduction interdite.</p>
 </footer>
 
-<script src="data.js"></script>
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose">Fermer</button>
+  <button class="lb-prev" id="lbPrev" aria-label="Image précédente"></button>
+  <img id="lbImg" alt="">
+  <button class="lb-next" id="lbNext" aria-label="Image suivante"></button>
+  <p class="lb-cap" id="lbCap"></p>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

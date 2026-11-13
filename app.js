@@ -1,91 +1,92 @@
-// Cadran-paysage peint en SVG, utilisé tant qu'aucune photo n'est fournie
-function dial([sky, light, deep], seed = 1, big = false) {
-  const r = (n) => { const x = Math.sin(seed * 9301 + n * 49297) * 233280; return x - Math.floor(x); };
-  const id = "g" + Math.round(r(1) * 1e9);
-  const peaks = (y, h, n) => {
-    let d = `M 20 ${y}`;
-    for (let i = 0; i <= n; i++) {
-      const x = 20 + (160 / n) * i;
-      const py = y - h * (0.35 + r(i + y) * 0.65) * (i % 2 ? 1 : 0.55);
-      d += ` L ${x.toFixed(1)} ${py.toFixed(1)}`;
-    }
-    return d + " L 180 180 L 20 180 Z";
-  };
-  const ticks = Array.from({ length: 12 }, (_, i) => {
-    const a = (i / 12) * Math.PI * 2;
-    const r1 = i % 3 ? 74 : 70, r2 = 79;
-    return `<line x1="${100 + Math.sin(a) * r1}" y1="${100 - Math.cos(a) * r1}" x2="${100 + Math.sin(a) * r2}" y2="${100 - Math.cos(a) * r2}" stroke="${light}" stroke-width="${i % 3 ? 1.2 : 2.6}" stroke-linecap="round" opacity=".9"/>`;
-  }).join("");
-  const hA = r(3) * 360, mA = r(4) * 360;
-  return `
-<svg viewBox="0 0 200 ${big ? 260 : 200}" xmlns="http://www.w3.org/2000/svg" role="img">
-  <defs>
-    <radialGradient id="${id}s" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="${light}"/><stop offset=".55" stop-color="${sky}"/><stop offset="1" stop-color="${deep}"/></radialGradient>
-    <linearGradient id="${id}c" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#f4ead8"/><stop offset=".5" stop-color="#9a8a72"/><stop offset="1" stop-color="#3a3127"/></linearGradient>
-    <clipPath id="${id}k"><circle cx="100" cy="100" r="80"/></clipPath>
-  </defs>
-  ${big ? `<rect x="78" y="4" width="44" height="26" rx="6" fill="${deep}" opacity=".85"/><rect x="78" y="170" width="44" height="86" rx="8" fill="${deep}" opacity=".85"/>` : ""}
-  <circle cx="100" cy="100" r="92" fill="url(#${id}c)"/>
-  <circle cx="100" cy="100" r="84" fill="${deep}"/>
-  <g clip-path="url(#${id}k)">
-    <rect x="0" y="0" width="200" height="200" fill="url(#${id}s)"/>
-    <circle cx="${70 + r(5) * 60}" cy="${55 + r(6) * 20}" r="${8 + r(7) * 8}" fill="${light}" opacity=".85"/>
-    <path d="${peaks(150, 70, 7)}" fill="${sky}" opacity=".55"/>
-    <path d="${peaks(165, 60, 5)}" fill="${deep}" opacity=".85"/>
-    <path d="M20 172 Q 100 ${155 + r(8) * 10} 180 172 L180 190 L20 190Z" fill="${light}" opacity=".25"/>
-  </g>
-  ${ticks}
-  <g stroke="${light}" stroke-linecap="round">
-    <line x1="100" y1="100" x2="${100 + Math.sin(hA * Math.PI / 180) * 40}" y2="${100 - Math.cos(hA * Math.PI / 180) * 40}" stroke-width="4"/>
-    <line x1="100" y1="100" x2="${100 + Math.sin(mA * Math.PI / 180) * 62}" y2="${100 - Math.cos(mA * Math.PI / 180) * 62}" stroke-width="2.4"/>
-  </g>
-  <circle cx="100" cy="100" r="4" fill="${light}"/>
-  <rect x="188" y="94" width="8" height="12" rx="2" fill="url(#${id}c)"/>
-</svg>`;
-}
+/*
+  Pour ajouter une œuvre : déposer l'image dans images/ (grande) et images/m/ (640 px de large),
+  puis ajouter une ligne ci-dessous.  [nom-du-fichier, "Légende"]
+*/
+const OEUVRES = [
+  ["oeuvre-reverso-ocean", "Reverso, l'océan"],
+  ["oeuvre-planete", "La Terre"],
+  ["oeuvre-disco", "Disco"],
+  ["oeuvre-squelette-or", "Squelette d'or"],
+  ["oeuvre-eclat", "Cristaux"],
+  ["oeuvre-orange", "Ciel d'or"],
+  ["oeuvre-serpent", "Nuit"],
+  ["oeuvre-nuage-rose", "Nuage rose"],
+  ["oeuvre-nautilus-rose", "Or rose"],
+  ["portrait-oeuvre", "Petit format"],
+  ["process-fleurs", "En cours, fleurs de cerisier"],
+  ["portrait-automne", "Automne"],
+];
 
-const IG = (p) => `https://www.instagram.com/fawnmoreau/${p}/`;
-const visual = (w, i) =>
-  w.img
-    ? `<img src="${w.img}" alt="${w.title} — peinture de Fawn Moreau" loading="lazy">`
-    : `<div class="dial">${dial(w.palette, i + 3)}</div>`;
+const SAISONS = [
+  ["saison-printemps", "Printemps"],
+  ["saison-ete", "Été"],
+  ["saison-automne", "Automne"],
+  ["saison-hiver", "Hiver"],
+];
 
-const badge = { dispo: "Disponible", vendu: "Vendue", commande: "Commande" };
+const CARNET = [
+  ["carnet-van-cleef", "Van Cleef & Arpels"],
+  ["carnet-fp-journe", "F.P. Journe"],
+  ["carnet-hermes", "Hermès"],
+  ["carnet-voutilainen", "Voutilainen"],
+  ["carnet-vacheron", "Vacheron Constantin"],
+  ["carnet-commande-bleue", "Commande, aquarelle"],
+];
 
-document.getElementById("gridUnivers").innerHTML = UNIVERS.map((w, i) => `
-  <a class="card" href="${IG(w.ig)}" target="_blank" rel="noopener">
-    <div class="frame" style="--bg:${w.palette[2]}">${visual(w, i)}
-      ${w.status ? `<span class="badge ${w.status}">${badge[w.status]}</span>` : ""}
-    </div>
-    <h3>${w.title}</h3>
-    <p>${[w.tech, w.format].filter(Boolean).join(" · ")}</p>
-  </a>`).join("");
+const $ = (id) => document.getElementById(id);
+const all = [];
+const fig = ([file, cap], cls = "") => {
+  const i = all.push({ file, cap }) - 1;
+  return `<figure class="${cls}" data-i="${i}" tabindex="0">
+    <img src="images/m/${file}.jpg" alt="${cap}, peinture de Fawn Moreau" loading="lazy">
+    <figcaption>${cap}</figcaption></figure>`;
+};
 
-document.getElementById("seasons").innerHTML = SAISONS.map((w, i) => `
-  <a class="season" href="${IG(w.ig)}" target="_blank" rel="noopener" style="--bg:${w.palette[2]}">
-    ${visual(w, i + 40)}
-    <span>${w.title}</span>
-  </a>`).join("");
+$("gallery").innerHTML = OEUVRES.map((o) => fig(o)).join("");
+$("seasons").innerHTML = SAISONS.map((o) => fig(o)).join("");
+$("strip").innerHTML = CARNET.map((o) => fig(o)).join("");
+$("year").textContent = new Date().getFullYear();
 
-document.getElementById("carnetList").innerHTML = CARNET.map(([name, ig], i) => `
-  <a class="page" href="${IG(ig)}" target="_blank" rel="noopener">
-    <span class="num">${String(i + 1).padStart(2, "0")}</span>
-    <span class="name">${name}</span>
-    <span class="arrow">↗</span>
-  </a>`).join("");
-
-document.getElementById("heroArt").innerHTML = dial(["#2c4a6e", "#f1e3c8", "#0d1626"], 7, true);
-document.getElementById("year").textContent = new Date().getFullYear();
-
-// Menu mobile
-const burger = document.getElementById("burger"), links = document.getElementById("links");
-burger.addEventListener("click", () => {
-  const open = links.classList.toggle("open");
-  burger.setAttribute("aria-expanded", open);
+/* Visionneuse */
+const lb = $("lightbox");
+let cur = 0;
+const show = (i) => {
+  cur = (i + all.length) % all.length;
+  $("lbImg").src = `images/${all[cur].file}.jpg`;
+  $("lbImg").alt = all[cur].cap;
+  $("lbCap").textContent = all[cur].cap;
+};
+const open = (i) => { show(i); lb.classList.add("on"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; };
+const close = () => { lb.classList.remove("on"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
+document.addEventListener("click", (e) => { const f = e.target.closest("figure[data-i]"); if (f) open(+f.dataset.i); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") { const f = document.activeElement.closest?.("figure[data-i]"); if (f) open(+f.dataset.i); }
+  if (!lb.classList.contains("on")) return;
+  if (e.key === "Escape") close();
+  if (e.key === "ArrowRight") show(cur + 1);
+  if (e.key === "ArrowLeft") show(cur - 1);
 });
-links.addEventListener("click", (e) => { if (e.target.tagName === "A") links.classList.remove("open"); });
-addEventListener("scroll", () => document.getElementById("nav").classList.toggle("scrolled", scrollY > 30));
+$("lbClose").onclick = close;
+$("lbNext").onclick = () => show(cur + 1);
+$("lbPrev").onclick = () => show(cur - 1);
+lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
+let x0 = null;
+lb.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+lb.addEventListener("touchend", (e) => {
+  if (x0 === null) return;
+  const dx = e.changedTouches[0].clientX - x0;
+  if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+  x0 = null;
+});
 
-// Apparition douce
-const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("in")), { threshold: 0.12 });
-document.querySelectorAll(".section, .card, .season").forEach((el) => io.observe(el));
+/* Menu */
+const burger = $("burger"), menu = $("menu");
+burger.onclick = () => { const o = document.body.classList.toggle("nav-open"); burger.setAttribute("aria-expanded", o); };
+menu.addEventListener("click", (e) => { if (e.target.tagName === "A") document.body.classList.remove("nav-open"); });
+const header = $("top");
+const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 0.6);
+addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+/* Apparition douce */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+document.querySelectorAll(".intro, .steps li, .gallery figure, .seasons figure, .about, .moments figure, .formats").forEach((el) => io.observe(el));

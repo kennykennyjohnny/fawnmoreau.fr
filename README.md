@@ -1,14 +1,15 @@
 # fawnmoreau.fr
 
-Site vitrine de Fawn Moreau, peintre horlogère à Paris. Site statique (HTML/CSS/JS) déployé avec GitHub Pages.
+Site de Fawn Moreau, peintre horlogère à Paris. Site statique (HTML/CSS/JS), déployé avec GitHub Pages sur fawnmoreau.fr.
 
-## Mettre à jour les œuvres
-Tout le catalogue est dans `data.js`.
-- Ajouter une photo : déposer le fichier dans `images/` puis renseigner `img: "images/mon-fichier.jpg"` sur l'œuvre.
-- Changer un statut : `status: "dispo"`, `"vendu"`, `"commande"` ou `""`.
-- Sans photo, le site affiche un cadran peint aux couleurs de `palette`.
+## Ajouter ou changer une œuvre
+- Mettre l'image en grand dans `images/` et en 640 px de large dans `images/m/` (même nom de fichier).
+- Ajouter une ligne dans `app.js` : listes `OEUVRES`, `SAISONS` ou `CARNET`, au format `["nom-du-fichier", "Légende"]`.
+- Cliquer sur une image ouvre la visionneuse en grand.
+
+## Polices
+Instrument Serif (titres) et Geist (texte), hébergées dans `fonts/` (pas d'appel à Google Fonts).
 
 ## À compléter
-- Photos HD des œuvres + photo de Fawn (`#aboutPhoto` dans index.html)
-- Titres définitifs, formats et disponibilités
-- Mentions légales (SIRET, adresse, e-mail)
+- Légendes définitives des œuvres (provisoires pour l'instant)
+- Mentions légales : SIRET, adresse, e-mail
