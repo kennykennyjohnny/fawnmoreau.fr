@@ -33,6 +33,24 @@ const CARNET = [
   ["carnet-commande-bleue", "Commande, aquarelle"],
 ];
 
+/* Actualiser la page ramène toujours en haut.
+   Sans ça, le téléphone rouvre la page là où on était, ou saute à l'ancre
+   restée dans l'adresse (#contact après un tap sur « Commander »). */
+const navEntry = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+const cleanUrl = () => history.replaceState(null, "", location.pathname + location.search);
+const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+if (navEntry && navEntry.type === "reload") {
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  if (location.hash) cleanUrl();
+  toTop();
+  addEventListener("load", toTop);
+}
+// les liens du menu font défiler la page sans laisser de #ancre dans l'adresse
+document.addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (a && a.getAttribute("href").length > 1) setTimeout(cleanUrl, 0);
+});
+
 const $ = (id) => document.getElementById(id);
 const all = [];
 const fig = ([file, cap]) => {
