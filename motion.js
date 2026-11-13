@@ -93,7 +93,7 @@
   const onScroll = () => {
     const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
     bar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-    if (!document.body.classList.contains("nav-open")) header.classList.toggle("hide", y > lastY && y > innerHeight);
+    if (!document.body.classList.contains("nav-open") && y !== lastY) header.classList.toggle("hide", y > lastY && y > innerHeight);
     lastY = y;
     if (heroImg && y < innerHeight * 1.2) heroImg.style.transform = `translate3d(0, ${y * (desk.matches ? 0.1 : 0.18)}px, 0)`;
     if (desk.matches) {
@@ -107,6 +107,8 @@
     ticking = false;
   };
   addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  // après un saut vers une partie du site, l'en-tête reste visible comme sur une nouvelle page
+  document.addEventListener("pagejump", () => { lastY = scrollY; header.classList.remove("hide"); });
   desk.addEventListener("change", () => { evens.forEach((el) => (el.style.transform = "")); onScroll(); });
   onScroll();
 

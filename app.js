@@ -45,17 +45,6 @@ if (navEntry && navEntry.type === "reload") {
   toTop();
   addEventListener("load", toTop);
 }
-// le logo remonte en haut de la page au lieu de la recharger
-document.getElementById("logo").addEventListener("click", (e) => {
-  e.preventDefault();
-  window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-});
-// les liens du menu font défiler la page sans laisser de #ancre dans l'adresse
-document.addEventListener("click", (e) => {
-  const a = e.target.closest('a[href^="#"]');
-  if (a && a.getAttribute("href").length > 1) setTimeout(cleanUrl, 0);
-});
-
 const $ = (id) => document.getElementById(id);
 const webp = (file) => [400, 640, 1000].map((w) => `images/w/${file}-${w}.webp ${w}w`).join(", ");
 const COLLECTIONS = {
@@ -120,10 +109,15 @@ const close = (fromHistory = false) => {
   img.style.transform = ""; img.style.opacity = "0";
   document.body.classList.remove("lb-open");
   setTimeout(() => { if (!isOpen) { lb.hidden = true; img.style.opacity = ""; } }, 350);
-  if (!fromHistory && history.state && history.state.lb) history.back();
+  if (!fromHistory && history.state && history.state.lb) { skipPop = true; history.back(); }
   if (lastFocus) lastFocus.focus({ preventScroll: true });
 };
-addEventListener("popstate", () => close(true));
+let skipPop = false;
+addEventListener("popstate", (e) => {
+  if (isOpen) return close(true);
+  if (skipPop) { skipPop = false; return; }
+  if (e.state && typeof e.state.y === "number") go(e.state.y, "", null);
+});
 document.addEventListener("click", (e) => {
   const t = e.target.closest(".tile");
   if (t) { col = COLLECTIONS[t.dataset.c]; open(+t.dataset.i, t); }
@@ -179,3 +173,57 @@ const header = $("top");
 const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 0.6);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
+
+/* Navigation : chaque partie s'ouvre comme une page à part.
+   Au lieu de faire défiler tout le site jusqu'à la section, un voile couvre l'écran
+   avec le nom de la destination, on saute directement, puis le voile se lève.
+   Le bouton retour du téléphone ramène à l'endroit d'où l'on vient. */
+const NAMES = { "sur-mesure": "Sur mesure", oeuvres: "Œuvres", saisons: "Les Quatre Saisons", carnet: "Carnet", apropos: "À propos", contact: "Commande" };
+const still = matchMedia("(prefers-reduced-motion: reduce)");
+const veil = document.createElement("div");
+veil.className = "veil";
+veil.setAttribute("aria-hidden", "true");
+veil.innerHTML = '<span class="veil-name"></span>';
+document.body.appendChild(veil);
+let busy = false;
+
+const topOf = (el) => Math.min(Math.round(el.getBoundingClientRect().top + scrollY), document.documentElement.scrollHeight - innerHeight);
+// couleur de fond de la destination (celle de la page si la section n'en a pas)
+const bgOf = (el) => {
+  const c = getComputedStyle(el).backgroundColor, m = c.match(/[\d.]+/g);
+  return !m || (m[3] !== undefined && +m[3] === 0) ? null : { c, dark: +m[0] + +m[1] + +m[2] < 200 };
+};
+const land = (y, target) => {
+  window.scrollTo({ top: y, left: 0, behavior: "instant" });
+  document.dispatchEvent(new CustomEvent("pagejump"));
+  if (target) { target.setAttribute("tabindex", "-1"); target.focus({ preventScroll: true }); }
+};
+function go(y, name, target) {
+  if (busy) return;
+  if (still.matches) return land(y, target);
+  busy = true;
+  const dest = target || document.querySelector(".hero");
+  const bg = bgOf(dest);
+  veil.classList.toggle("dark", !!(bg && bg.dark));
+  veil.style.background = bg ? bg.c : "";
+  veil.firstChild.textContent = name || "";
+  veil.classList.add("on");
+  setTimeout(() => {
+    land(y, target);
+    requestAnimationFrame(() => requestAnimationFrame(() => { veil.classList.remove("on"); busy = false; }));
+  }, 340);
+}
+
+document.addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"], #logo');
+  if (!a || a.classList.contains("skip") || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const id = a.id === "logo" ? "" : a.getAttribute("href").slice(1);
+  const target = id ? document.getElementById(id) : null;
+  if (id && !target) return;
+  e.preventDefault();
+  const y = target ? topOf(target) : 0;
+  if (Math.abs(y - scrollY) < 2) return;
+  history.replaceState({ ...(history.state || {}), y: Math.round(scrollY) }, "");
+  history.pushState({ y }, "");
+  go(y, target ? NAMES[id] : "", target);
+});
