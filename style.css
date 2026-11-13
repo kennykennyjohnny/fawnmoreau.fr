@@ -320,10 +320,30 @@ body.lb-open{overflow:hidden}
 @media (max-width:900px){.motion .hero-img{animation-name:heroInPhone}}
 @keyframes heroInPhone{from{opacity:.25}to{opacity:1}}
 
-/* Voile de navigation (voir la fin de app.js) */
-.veil{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:var(--paper);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .45s ease,visibility 0s linear .45s}
-.veil.on{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .32s ease,visibility 0s}
-.veil-name{font-family:var(--serif);font-style:italic;font-size:clamp(2.2rem,6vw,3.6rem);line-height:1;color:var(--ink);opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
-.veil.on .veil-name{opacity:1;transform:none;transition-delay:.06s}
-.veil.dark .veil-name{color:#ece7df}
+/* Voile de navigation (voir la fin de app.js) : une trotteuse et un lavis d'aquarelle */
+.veil{position:fixed;inset:0;z-index:80;pointer-events:none;visibility:hidden;--edge:16deg;--pool:rgba(150,118,76,.16)}
+.veil.nuit{--pool:rgba(96,128,190,.22)}
+.veil[data-phase]{visibility:visible;pointer-events:auto}
+.veil-wash{position:absolute;inset:0;background:conic-gradient(from 0deg,transparent calc(var(--a) - var(--edge)),var(--pool) calc(var(--a) - 3deg),transparent calc(var(--a) + 2deg)),var(--paper) url(images/lavis-clair.webp) center/cover}
+.veil.nuit .veil-wash{background:conic-gradient(from 0deg,transparent calc(var(--a) - var(--edge)),var(--pool) calc(var(--a) - 3deg),transparent calc(var(--a) + 2deg)),var(--night) url(images/lavis-nuit.webp) center/cover}
+/* aller : le lavis se pose derrière la trotteuse, avec un bord plus chargé comme une aquarelle qui sèche */
+.veil[data-phase="in"] .veil-wash{-webkit-mask-image:conic-gradient(from 0deg,#000 calc(var(--a) - var(--edge)),transparent var(--a));mask-image:conic-gradient(from 0deg,#000 calc(var(--a) - var(--edge)),transparent var(--a))}
+/* retour : la trotteuse refait un tour et emporte le lavis */
+.veil[data-phase="out"] .veil-wash{background-image:conic-gradient(from 0deg,transparent calc(var(--a) - 2deg),var(--pool) calc(var(--a) + 3deg),transparent calc(var(--a) + var(--edge))),url(images/lavis-clair.webp)}
+.veil.nuit[data-phase="out"] .veil-wash{background-image:conic-gradient(from 0deg,transparent calc(var(--a) - 2deg),var(--pool) calc(var(--a) + 3deg),transparent calc(var(--a) + var(--edge))),url(images/lavis-nuit.webp)}
+.veil[data-phase="out"] .veil-wash{-webkit-mask-image:conic-gradient(from 0deg,transparent calc(var(--a) - var(--edge)),#000 var(--a));mask-image:conic-gradient(from 0deg,transparent calc(var(--a) - var(--edge)),#000 var(--a))}
+.veil[data-phase="in"]{animation:veilIn .4s cubic-bezier(.5,0,.75,.5) both}
+.veil[data-phase="out"]{animation:veilOut .52s cubic-bezier(.25,.5,.35,1) both}
+@keyframes veilIn{from{--a:0deg}to{--a:376deg}}
+@keyframes veilOut{from{--a:0deg}to{--a:376deg}}
+.veil-hand{position:absolute;left:50%;top:50%;width:1.5px;height:76vmax;margin-left:-.75px;transform-origin:50% 100%;transform:translateY(-100%) rotate(var(--a));background:linear-gradient(to top,#c9a46a,#c9a46a 55%,rgba(201,164,106,0))}
+.veil-hand::after{content:"";position:absolute;left:50%;bottom:-3.5px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#c9a46a}
+.veil[data-phase="out"] .veil-hand{opacity:0;transition:opacity .25s ease .3s}
+/* navigateurs sans angle animable : simple fondu */
+.veil.fade .veil-hand{display:none}
+.veil.fade[data-phase="in"]{animation:veilFadeIn .32s ease both}
+.veil.fade[data-phase="out"]{animation:veilFadeOut .45s ease both}
+.veil.fade .veil-wash{-webkit-mask-image:none;mask-image:none}
+@keyframes veilFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes veilFadeOut{from{opacity:1}to{opacity:0}}
 section[tabindex="-1"]:focus{outline:none}

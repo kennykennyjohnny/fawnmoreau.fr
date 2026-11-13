@@ -116,7 +116,7 @@ let skipPop = false;
 addEventListener("popstate", (e) => {
   if (isOpen) return close(true);
   if (skipPop) { skipPop = false; return; }
-  if (e.state && typeof e.state.y === "number") go(e.state.y, "", null);
+  if (e.state && typeof e.state.y === "number") go(e.state.y, null);
 });
 document.addEventListener("click", (e) => {
   const t = e.target.closest(".tile");
@@ -175,43 +175,47 @@ addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 
 /* Navigation : chaque partie s'ouvre comme une page à part.
-   Au lieu de faire défiler tout le site jusqu'à la section, un voile couvre l'écran
-   avec le nom de la destination, on saute directement, puis le voile se lève.
-   Le bouton retour du téléphone ramène à l'endroit d'où l'on vient. */
-const NAMES = { "sur-mesure": "Sur mesure", oeuvres: "Œuvres", saisons: "Les Quatre Saisons", carnet: "Carnet", apropos: "À propos", contact: "Commande" };
+   Pas de long défilement : une trotteuse fait le tour de l'écran et pose derrière elle
+   un lavis d'aquarelle de la couleur de la destination ; on saute directement à la partie,
+   puis la trotteuse refait un tour et emporte le lavis. Le retour arrière ramène d'où l'on vient. */
 const still = matchMedia("(prefers-reduced-motion: reduce)");
+let sweep = false;
+// l'angle de la trotteuse doit pouvoir s'animer ; sinon, simple fondu
+try { CSS.registerProperty({ name: "--a", syntax: "<angle>", inherits: true, initialValue: "0deg" }); sweep = true; } catch (err) { sweep = false; }
 const veil = document.createElement("div");
 veil.className = "veil";
 veil.setAttribute("aria-hidden", "true");
-veil.innerHTML = '<span class="veil-name"></span>';
+veil.innerHTML = '<i class="veil-wash"></i><i class="veil-hand"></i>';
 document.body.appendChild(veil);
+addEventListener("load", () => ["clair", "nuit"].forEach((n) => { new Image().src = `images/lavis-${n}.webp`; }), { once: true });
 let busy = false;
 
 const topOf = (el) => Math.min(Math.round(el.getBoundingClientRect().top + scrollY), document.documentElement.scrollHeight - innerHeight);
-// couleur de fond de la destination (celle de la page si la section n'en a pas)
-const bgOf = (el) => {
-  const c = getComputedStyle(el).backgroundColor, m = c.match(/[\d.]+/g);
-  return !m || (m[3] !== undefined && +m[3] === 0) ? null : { c, dark: +m[0] + +m[1] + +m[2] < 200 };
+const isDark = (el) => {
+  const m = getComputedStyle(el).backgroundColor.match(/[\d.]+/g);
+  return !!m && !(m[3] !== undefined && +m[3] === 0) && +m[0] + +m[1] + +m[2] < 200;
 };
 const land = (y, target) => {
   window.scrollTo({ top: y, left: 0, behavior: "instant" });
   document.dispatchEvent(new CustomEvent("pagejump"));
   if (target) { target.setAttribute("tabindex", "-1"); target.focus({ preventScroll: true }); }
 };
-function go(y, name, target) {
+const phase = (name) => new Promise((done) => {
+  veil.addEventListener("animationend", done, { once: true });
+  veil.dataset.phase = name;
+});
+async function go(y, target) {
   if (busy) return;
   if (still.matches) return land(y, target);
   busy = true;
-  const dest = target || document.querySelector(".hero");
-  const bg = bgOf(dest);
-  veil.classList.toggle("dark", !!(bg && bg.dark));
-  veil.style.background = bg ? bg.c : "";
-  veil.firstChild.textContent = name || "";
-  veil.classList.add("on");
-  setTimeout(() => {
-    land(y, target);
-    requestAnimationFrame(() => requestAnimationFrame(() => { veil.classList.remove("on"); busy = false; }));
-  }, 340);
+  veil.classList.toggle("nuit", isDark(target || document.querySelector(".hero")));
+  veil.classList.toggle("fade", !sweep);
+  await phase("in");
+  land(y, target);
+  await new Promise(requestAnimationFrame);
+  await phase("out");
+  delete veil.dataset.phase;
+  busy = false;
 }
 
 document.addEventListener("click", (e) => {
@@ -225,5 +229,5 @@ document.addEventListener("click", (e) => {
   if (Math.abs(y - scrollY) < 2) return;
   history.replaceState({ ...(history.state || {}), y: Math.round(scrollY) }, "");
   history.pushState({ y }, "");
-  go(y, target ? NAMES[id] : "", target);
+  go(y, target);
 });
