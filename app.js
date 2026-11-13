@@ -166,7 +166,7 @@ const setMenu = (o) => {
   if (o) menu.querySelector("a").focus();
 };
 burger.onclick = () => setMenu(!document.body.classList.contains("nav-open"));
-menu.addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
+menu.addEventListener("click", (e) => { const a = e.target.closest("a"); if (a && !a.getAttribute("href").startsWith("#")) setMenu(false); });
 matchMedia("(min-width: 901px)").addEventListener("change", (m) => { if (m.matches) setMenu(false); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { setMenu(false); burger.focus(); } });
 const header = $("top");
@@ -174,20 +174,20 @@ const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 
-/* Navigation : chaque partie s'ouvre comme une page à part.
-   Pas de long défilement : une trotteuse fait le tour de l'écran et pose derrière elle
-   un lavis d'aquarelle de la couleur de la destination ; on saute directement à la partie,
-   puis la trotteuse refait un tour et emporte le lavis. Le retour arrière ramène d'où l'on vient. */
+/* Navigation : chaque partie s'ouvre comme une page à part, et l'en-tête reste en place.
+   Une goutte d'aquarelle s'étale depuis l'endroit touché et recouvre le contenu
+   (lavis bleu nuit ou sépia selon la destination), on saute directement à la partie,
+   puis le lavis s'efface pendant que la nouvelle partie apparaît. Le tout dure 0,6 s.
+   Le retour arrière ramène d'où l'on vient. */
 const still = matchMedia("(prefers-reduced-motion: reduce)");
-let sweep = false;
-// l'angle de la trotteuse doit pouvoir s'animer ; sinon, simple fondu
-try { CSS.registerProperty({ name: "--a", syntax: "<angle>", inherits: true, initialValue: "0deg" }); sweep = true; } catch (err) { sweep = false; }
+let bloom = false;
+// la taille de la goutte doit pouvoir s'animer ; sinon, simple fondu
+try { CSS.registerProperty({ name: "--s", syntax: "<length>", inherits: false, initialValue: "0px" }); bloom = true; } catch (err) { bloom = false; }
 const veil = document.createElement("div");
 veil.className = "veil";
 veil.setAttribute("aria-hidden", "true");
-veil.innerHTML = '<i class="veil-wash"></i><i class="veil-hand"></i>';
 document.body.appendChild(veil);
-addEventListener("load", () => ["clair", "nuit"].forEach((n) => { new Image().src = `images/lavis-${n}.webp`; }), { once: true });
+addEventListener("load", () => ["lavis-clair", "lavis-nuit", "goutte"].forEach((n) => { new Image().src = `images/${n}.webp`; }), { once: true });
 let busy = false;
 
 const topOf = (el) => Math.min(Math.round(el.getBoundingClientRect().top + scrollY), document.documentElement.scrollHeight - innerHeight);
@@ -204,17 +204,36 @@ const phase = (name) => new Promise((done) => {
   veil.addEventListener("animationend", done, { once: true });
   veil.dataset.phase = name;
 });
-async function go(y, target) {
+// le menu du téléphone se ferme d'un coup, caché sous le lavis
+const shutMenu = () => {
+  if (!document.body.classList.contains("nav-open")) return;
+  menu.style.transition = "none";
+  setMenu(false);
+  requestAnimationFrame(() => requestAnimationFrame(() => { menu.style.transition = ""; }));
+};
+async function go(y, target, from) {
   if (busy) return;
-  if (still.matches) return land(y, target);
+  const inMenu = document.body.classList.contains("nav-open");
+  if (still.matches) { shutMenu(); return land(y, target); }
   busy = true;
+  veil.classList.toggle("over", inMenu);
+  const x = from ? from.x : innerWidth / 2, yy = from ? from.y : innerHeight / 2;
+  // la goutte doit couvrir l'écran entier, jusqu'au coin le plus éloigné (son bord le plus creux, flou compris, est à 34 % de sa taille)
+  const far = Math.max(Math.hypot(x, yy), Math.hypot(innerWidth - x, yy), Math.hypot(x, innerHeight - yy), Math.hypot(innerWidth - x, innerHeight - yy));
+  veil.style.setProperty("--x", `${x}px`);
+  veil.style.setProperty("--y", `${yy}px`);
+  veil.style.setProperty("--full", `${Math.ceil(far / 0.34)}px`);
   veil.classList.toggle("nuit", isDark(target || document.querySelector(".hero")));
-  veil.classList.toggle("fade", !sweep);
+  veil.classList.toggle("fade", !bloom);
+  $("top").classList.add("solid");
+  $("top").classList.remove("hide");
   await phase("in");
+  shutMenu();
   land(y, target);
-  await new Promise(requestAnimationFrame);
+  if (target) { target.classList.add("arrive"); setTimeout(() => target.classList.remove("arrive"), 1400); }
   await phase("out");
   delete veil.dataset.phase;
+  veil.classList.remove("over");
   busy = false;
 }
 
@@ -229,5 +248,9 @@ document.addEventListener("click", (e) => {
   if (Math.abs(y - scrollY) < 2) return;
   history.replaceState({ ...(history.state || {}), y: Math.round(scrollY) }, "");
   history.pushState({ y }, "");
-  go(y, target);
+  // les images de la destination se chargent pendant que la goutte s'étale, pour qu'elles soient là à l'arrivée
+  if (target) target.querySelectorAll('img[loading="lazy"]').forEach((im) => { im.loading = "eager"; });
+  const r = a.getBoundingClientRect();
+  // la goutte part du doigt (ou du centre du lien au clavier)
+  go(y, target, e.detail ? { x: e.clientX, y: e.clientY } : { x: r.left + r.width / 2, y: r.top + r.height / 2 });
 });

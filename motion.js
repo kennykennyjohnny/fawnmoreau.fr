@@ -108,7 +108,10 @@
   };
   addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   // après un saut vers une partie du site, l'en-tête reste visible comme sur une nouvelle page
-  document.addEventListener("pagejump", () => { lastY = scrollY; header.classList.remove("hide"); });
+  document.addEventListener("pagejump", () => {
+    lastY = scrollY; header.classList.remove("hide");
+    bar.classList.add("glide"); setTimeout(() => bar.classList.remove("glide"), 850);
+  });
   desk.addEventListener("change", () => { evens.forEach((el) => (el.style.transform = "")); onScroll(); });
   onScroll();
 

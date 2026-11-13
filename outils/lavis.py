@@ -44,4 +44,20 @@ def paint(base, pigment, amount, edge_amount, name):
     print(name, (OUT / name).stat().st_size // 1024, "Ko")
 
 paint((244, 240, 233), (176, 148, 108), 0.17, 0.09, "lavis-clair.webp")
-paint((15, 17, 21), (40, 64, 112), 0.55, 0.22, "lavis-nuit.webp")
+paint((15, 17, 21), (40, 64, 112), 0.34, 0.14, "lavis-nuit.webp")
+
+# masque de la goutte : une tache d'aquarelle qui s'étale, bord irrégulier et légèrement granuleux
+S = 640
+yy, xx = np.mgrid[0:S, 0:S] / S - 0.5
+d = np.hypot(xx, yy)
+theta = np.arctan2(yy, xx)
+def ring_noise(k, amp, seed):
+    r = np.random.default_rng(seed)
+    return sum(r.normal() * amp / f * np.cos(f * theta + r.uniform(0, 6.28)) for f in range(2, k))
+radius = 0.42 * (1 + ring_noise(14, 0.10, 3) + ring_noise(40, 0.012, 4))
+fringe = 0.035 * (0.7 + 0.6 * gaussian_filter(rng.random((S, S)), 2) )
+alpha = np.clip((radius - d) / fringe + 0.5, 0, 1)
+alpha = np.where(d < radius - fringe, 1.0, alpha * (0.75 + 0.25 * gaussian_filter(rng.random((S, S)), 0.8)))
+rgba = np.dstack([np.full((S, S), 255)] * 3 + [alpha * 255]).astype(np.uint8)
+Image.fromarray(rgba, "RGBA").save(OUT / "goutte.webp", "WEBP", quality=80, method=6)
+print("goutte.webp", (OUT / "goutte.webp").stat().st_size // 1024, "Ko, rayon mini", round(float(radius.min()), 3))
