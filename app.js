@@ -55,7 +55,10 @@ const lb = $("lightbox"), img = $("lbImg");
 let cur = 0, lastFocus = null, isOpen = false;
 const show = (i) => {
   cur = (i + all.length) % all.length;
-  img.src = `images/${all[cur].file}.jpg`;
+  const idx = cur, full = new Image();
+  img.src = `images/m/${all[idx].file}.jpg`;
+  full.onload = () => { if (cur === idx) img.src = full.src; };
+  full.src = `images/${all[idx].file}.jpg`;
   img.alt = `${all[cur].cap}, peinture de Fawn Moreau`;
   $("lbCap").textContent = all[cur].cap;
   $("lbCount").textContent = `${cur + 1} / ${all.length}`;
@@ -63,9 +66,23 @@ const show = (i) => {
 };
 const open = (i, trigger) => {
   lastFocus = trigger || document.activeElement;
+  const thumb = trigger && trigger.querySelector("img");
+  const from = thumb && thumb.getBoundingClientRect();
   show(i);
   lb.hidden = false;
-  requestAnimationFrame(() => lb.classList.add("on"));
+  requestAnimationFrame(() => {
+    const to = img.getBoundingClientRect();
+    if (from && to.width && document.documentElement.classList.contains("motion")) {
+      img.style.transition = "none";
+      img.style.transformOrigin = "0 0";
+      img.style.transform = `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width})`;
+      img.getBoundingClientRect();
+      img.style.transition = "transform .7s cubic-bezier(.2,.8,.2,1)";
+      img.style.transform = "";
+      img.addEventListener("transitionend", () => { img.style.transition = ""; img.style.transformOrigin = ""; }, { once: true });
+    }
+    lb.classList.add("on");
+  });
   document.body.classList.add("lb-open");
   isOpen = true;
   history.pushState({ lb: true }, "");
@@ -75,9 +92,9 @@ const close = (fromHistory = false) => {
   if (!isOpen) return;
   isOpen = false;
   lb.classList.remove("on");
-  img.style.transform = ""; img.style.opacity = "";
+  img.style.transform = ""; img.style.opacity = "0";
   document.body.classList.remove("lb-open");
-  setTimeout(() => { if (!isOpen) lb.hidden = true; }, 300);
+  setTimeout(() => { if (!isOpen) { lb.hidden = true; img.style.opacity = ""; } }, 350);
   if (!fromHistory && history.state && history.state.lb) history.back();
   if (lastFocus) lastFocus.focus({ preventScroll: true });
 };
@@ -135,11 +152,3 @@ const header = $("top");
 const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 0.6);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-/* Apparition douce (désactivée si l'utilisateur réduit les animations) */
-const targets = document.querySelectorAll(".intro, .steps li, .gallery figure, .seasons figure, .about, .moments figure, .formats");
-if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
-  targets.forEach((el) => el.classList.add("in"));
-} else {
-  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
-  targets.forEach((el) => io.observe(el));
-}

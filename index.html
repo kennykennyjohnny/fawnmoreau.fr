@@ -22,6 +22,7 @@
 <a class="skip" href="#contenu">Aller au contenu</a>
 
 <header class="top" id="top">
+  <span class="progress" id="progress" aria-hidden="true"></span>
   <a href="#" class="logo">Fawn Moreau</a>
   <nav class="menu" id="menu" aria-label="Menu principal">
     <a href="#sur-mesure">Sur mesure</a>
@@ -41,7 +42,7 @@
       <img src="images/atelier-terre.jpg" alt="Fawn Moreau en train de peindre une montre dans son atelier" fetchpriority="high">
     </picture>
     <div class="hero-txt">
-      <p class="kicker">Peintre horlogère · Paris</p>
+      <p class="kicker">Peintre horlogère · Paris <span class="clock" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.6"/><line class="ch" x1="10" y1="10" x2="10" y2="5.6"/><line class="cm" x1="10" y1="10" x2="10" y2="3.4"/><line class="cs" x1="10" y1="12" x2="10" y2="2.6"/><circle class="cc" cx="10" cy="10" r="1"/></svg><span id="clockTxt"></span></span></p>
       <h1>Votre montre,<br><em>son univers.</em></h1>
       <p class="lead">Chaque montre a son histoire. Je la peins à la main, à l'acrylique ou à l'aquarelle, dans le monde qui lui ressemble.</p>
       <div class="actions">
@@ -105,6 +106,8 @@
     </div>
     <p class="center"><a href="#contact" class="btn">Parler de ma montre</a></p>
   </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track" id="track"></div></div>
 
   <!-- OEUVRES -->
   <section class="block dark" id="oeuvres">
@@ -193,6 +196,9 @@
   </div>
 </div>
 
+<div class="cursor" id="cursor" aria-hidden="true"><span>Voir</span></div>
+
 <script src="app.js"></script>
+<script src="motion.js"></script>
 </body>
 </html>
