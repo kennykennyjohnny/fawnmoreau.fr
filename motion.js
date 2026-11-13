@@ -45,9 +45,10 @@
   const imgs = ".steps figure, .gallery figure, .seasons figure, .strip figure, .about-img, .moments figure, .contact-bg";
   document.querySelectorAll(fade).forEach((el) => el.classList.add("rv"));
   document.querySelectorAll(imgs).forEach((el) => el.classList.add("rvi"));
+  document.querySelector(".about-img")?.classList.add("curtain");
 
   // léger décalage entre colonnes d'une même rangée
-  const stagger = (sel, cols) => document.querySelectorAll(sel).forEach((el, i) => el.style.setProperty("--d", `${(i % cols()) * 0.09}s`));
+  const stagger = (sel, cols) => document.querySelectorAll(sel).forEach((el, i) => el.style.setProperty("--d", `${(i % cols()) * 0.06}s`));
   stagger(".steps li figure", () => (isDesk() ? 4 : 2));
   stagger(".gallery figure", () => (isDesk() ? 4 : 2));
   stagger(".seasons figure", () => (isDesk() ? 4 : 2));

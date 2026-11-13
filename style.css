@@ -250,13 +250,13 @@ body.lb-open{overflow:hidden}
 .motion .rv{opacity:0;transform:translateY(22px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
 .motion .rv.in{opacity:1;transform:none}
 
-/* Images dévoilées de bas en haut */
-.motion .rvi{clip-path:inset(100% 0 0 0);transition:clip-path 1.3s cubic-bezier(.75,0,.2,1);transition-delay:var(--d,0s)}
-.motion .rvi img{transform:scale(1.18);transition:transform 1.8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
-.motion .rvi.in{clip-path:inset(0 0 0 0)}
-.motion .rvi.in img{transform:none}
-.motion .rvi.in .tile:hover img,.motion .steps li:hover .rvi.in img{transform:scale(1.04);transition-delay:0s}
-.motion .rvi .tile img{transition:transform 1.8s cubic-bezier(.2,.7,.2,1)}
+/* Photos : simple fondu, discret. Le rideau est réservé au portrait de Fawn. */
+.motion .rvi{opacity:0;transition:opacity .9s ease;transition-delay:var(--d,0s)}
+.motion .rvi.in{opacity:1}
+.motion .rvi.curtain{opacity:1;clip-path:inset(100% 0 0 0);transition:clip-path 1.3s cubic-bezier(.75,0,.2,1)}
+.motion .rvi.curtain img{transform:scale(1.12);transition:transform 1.8s cubic-bezier(.2,.7,.2,1)}
+.motion .rvi.curtain.in{clip-path:inset(0 0 0 0)}
+.motion .rvi.curtain.in img{transform:none}
 
 /* Ouverture de page */
 .motion .hero .kicker,.motion .hero .lead,.motion .hero .actions{opacity:0;transform:translateY(16px);transition:opacity 1.1s cubic-bezier(.2,.7,.2,1),transform 1.1s cubic-bezier(.2,.7,.2,1)}
