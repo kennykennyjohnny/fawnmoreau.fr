@@ -35,58 +35,111 @@ const CARNET = [
 
 const $ = (id) => document.getElementById(id);
 const all = [];
-const fig = ([file, cap], cls = "") => {
+const fig = ([file, cap]) => {
   const i = all.push({ file, cap }) - 1;
-  return `<figure class="${cls}" data-i="${i}" tabindex="0">
-    <img src="images/m/${file}.jpg" alt="${cap}, peinture de Fawn Moreau" loading="lazy">
-    <figcaption>${cap}</figcaption></figure>`;
+  return `<div role="listitem"><figure>
+    <button type="button" class="tile" data-i="${i}" aria-label="Agrandir : ${cap}">
+      <img src="images/m/${file}.jpg" alt="" loading="lazy">
+    </button>
+    <figcaption>${cap}</figcaption></figure></div>`;
 };
 
-$("gallery").innerHTML = OEUVRES.map((o) => fig(o)).join("");
-$("seasons").innerHTML = SAISONS.map((o) => fig(o)).join("");
-$("strip").innerHTML = CARNET.map((o) => fig(o)).join("");
+$("gallery").innerHTML = OEUVRES.map(fig).join("");
+$("seasons").innerHTML = SAISONS.map(fig).join("");
+$("strip").innerHTML = CARNET.map(fig).join("");
 $("year").textContent = new Date().getFullYear();
 
-/* Visionneuse */
-const lb = $("lightbox");
-let cur = 0;
+/* Visionneuse : fermeture par le bouton, Échap, le bouton retour du téléphone,
+   un glissement vers le bas ou un tap à côté de l'image */
+const lb = $("lightbox"), img = $("lbImg");
+let cur = 0, lastFocus = null, isOpen = false;
 const show = (i) => {
   cur = (i + all.length) % all.length;
-  $("lbImg").src = `images/${all[cur].file}.jpg`;
-  $("lbImg").alt = all[cur].cap;
+  img.src = `images/${all[cur].file}.jpg`;
+  img.alt = `${all[cur].cap}, peinture de Fawn Moreau`;
   $("lbCap").textContent = all[cur].cap;
+  $("lbCount").textContent = `${cur + 1} / ${all.length}`;
+  [cur - 1, cur + 1].forEach((k) => { const j = (k + all.length) % all.length; new Image().src = `images/${all[j].file}.jpg`; });
 };
-const open = (i) => { show(i); lb.classList.add("on"); lb.setAttribute("aria-hidden", "false"); document.body.style.overflow = "hidden"; };
-const close = () => { lb.classList.remove("on"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
-document.addEventListener("click", (e) => { const f = e.target.closest("figure[data-i]"); if (f) open(+f.dataset.i); });
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") { const f = document.activeElement.closest?.("figure[data-i]"); if (f) open(+f.dataset.i); }
-  if (!lb.classList.contains("on")) return;
-  if (e.key === "Escape") close();
-  if (e.key === "ArrowRight") show(cur + 1);
-  if (e.key === "ArrowLeft") show(cur - 1);
+const open = (i, trigger) => {
+  lastFocus = trigger || document.activeElement;
+  show(i);
+  lb.hidden = false;
+  requestAnimationFrame(() => lb.classList.add("on"));
+  document.body.classList.add("lb-open");
+  isOpen = true;
+  history.pushState({ lb: true }, "");
+  $("lbClose").focus();
+};
+const close = (fromHistory = false) => {
+  if (!isOpen) return;
+  isOpen = false;
+  lb.classList.remove("on");
+  img.style.transform = ""; img.style.opacity = "";
+  document.body.classList.remove("lb-open");
+  setTimeout(() => { if (!isOpen) lb.hidden = true; }, 300);
+  if (!fromHistory && history.state && history.state.lb) history.back();
+  if (lastFocus) lastFocus.focus({ preventScroll: true });
+};
+addEventListener("popstate", () => close(true));
+document.addEventListener("click", (e) => {
+  const t = e.target.closest(".tile");
+  if (t) open(+t.dataset.i, t);
 });
-$("lbClose").onclick = close;
-$("lbNext").onclick = () => show(cur + 1);
-$("lbPrev").onclick = () => show(cur - 1);
-lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
-let x0 = null;
-lb.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+$("lbClose").addEventListener("click", () => close());
+$("lbNext").addEventListener("click", () => show(cur + 1));
+$("lbPrev").addEventListener("click", () => show(cur - 1));
+lb.addEventListener("click", (e) => {
+  if (e.target === lb || e.target.id === "lbStage" || e.target.classList.contains("lb-nav")) close();
+});
+document.addEventListener("keydown", (e) => {
+  if (!isOpen) return;
+  if (e.key === "Escape") { e.preventDefault(); close(); }
+  else if (e.key === "ArrowRight") show(cur + 1);
+  else if (e.key === "ArrowLeft") show(cur - 1);
+  else if (e.key === "Tab") {
+    const f = [$("lbClose"), $("lbPrev"), $("lbNext")];
+    const k = f.indexOf(document.activeElement);
+    e.preventDefault();
+    f[(k + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+  }
+});
+let t0 = null;
+lb.addEventListener("touchstart", (e) => { t0 = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+lb.addEventListener("touchmove", (e) => {
+  if (!t0) return;
+  const dy = e.touches[0].clientY - t0.y, dx = e.touches[0].clientX - t0.x;
+  if (dy > 0 && Math.abs(dy) > Math.abs(dx)) { img.style.transform = `translateY(${dy}px)`; img.style.opacity = Math.max(0.3, 1 - dy / 400); }
+}, { passive: true });
 lb.addEventListener("touchend", (e) => {
-  if (x0 === null) return;
-  const dx = e.changedTouches[0].clientX - x0;
-  if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
-  x0 = null;
+  if (!t0) return;
+  const dx = e.changedTouches[0].clientX - t0.x, dy = e.changedTouches[0].clientY - t0.y;
+  img.style.transform = ""; img.style.opacity = "";
+  if (dy > 90 && Math.abs(dy) > Math.abs(dx)) close();
+  else if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(cur + (dx < 0 ? 1 : -1));
+  t0 = null;
 });
 
 /* Menu */
 const burger = $("burger"), menu = $("menu");
-burger.onclick = () => { const o = document.body.classList.toggle("nav-open"); burger.setAttribute("aria-expanded", o); };
-menu.addEventListener("click", (e) => { if (e.target.tagName === "A") document.body.classList.remove("nav-open"); });
+const setMenu = (o) => {
+  document.body.classList.toggle("nav-open", o);
+  burger.setAttribute("aria-expanded", o);
+  burger.setAttribute("aria-label", o ? "Fermer le menu" : "Ouvrir le menu");
+  if (o) menu.querySelector("a").focus();
+};
+burger.onclick = () => setMenu(!document.body.classList.contains("nav-open"));
+menu.addEventListener("click", (e) => { if (e.target.tagName === "A") setMenu(false); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) { setMenu(false); burger.focus(); } });
 const header = $("top");
 const onScroll = () => header.classList.toggle("solid", scrollY > innerHeight * 0.6);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-/* Apparition douce */
-const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
-document.querySelectorAll(".intro, .steps li, .gallery figure, .seasons figure, .about, .moments figure, .formats").forEach((el) => io.observe(el));
+/* Apparition douce (désactivée si l'utilisateur réduit les animations) */
+const targets = document.querySelectorAll(".intro, .steps li, .gallery figure, .seasons figure, .about, .moments figure, .formats");
+if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+  targets.forEach((el) => el.classList.add("in"));
+} else {
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  targets.forEach((el) => io.observe(el));
+}
