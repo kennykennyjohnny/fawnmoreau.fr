@@ -1,0 +1,129 @@
+:root{
+  --ink:#0f0d0b; --night:#141a24; --paper:#f3ece0; --cream:#e9dfcd; --gold:#c9a46a; --muted:#a59a88;
+  --serif:"Cormorant Garamond",Georgia,serif; --sans:"Manrope",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{background:var(--ink);color:var(--paper);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse at 80% -10%,rgba(201,164,106,.12),transparent 55%),radial-gradient(ellipse at 0% 40%,rgba(60,80,120,.12),transparent 50%)}
+a{color:inherit;text-decoration:none}
+em{font-style:italic;color:var(--gold)}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.05;letter-spacing:-.01em}
+.eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+.center{text-align:center}
+
+/* NAV */
+.nav{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 6vw;transition:.3s}
+.nav.scrolled{background:rgba(15,13,11,.86);backdrop-filter:blur(10px);border-bottom:1px solid rgba(201,164,106,.15)}
+.brand{font-family:var(--serif);font-size:1.45rem;letter-spacing:.06em}
+.links{display:flex;gap:2rem;align-items:center;font-size:.86rem}
+.links a{opacity:.8;transition:.2s}.links a:hover{opacity:1;color:var(--gold)}
+.pill{border:1px solid var(--gold);padding:.45rem 1.1rem;border-radius:99px;opacity:1!important;color:var(--gold)}
+.burger{display:none;background:none;border:0;width:30px;height:20px;position:relative;cursor:pointer}
+.burger span{position:absolute;left:0;right:0;height:1.5px;background:var(--paper)}
+.burger span:first-child{top:5px}.burger span:last-child{bottom:5px}
+
+/* HERO */
+.hero{min-height:100svh;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:4vw;padding:7rem 6vw 4rem}
+.hero h1{font-size:clamp(3.2rem,8vw,7rem);margin-bottom:1.6rem}
+.lead{max-width:34rem;color:var(--cream);font-size:1.05rem}
+.cta{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.2rem}
+.cta.center{justify-content:center}
+.btn{display:inline-block;background:var(--gold);color:var(--ink);padding:.95rem 1.8rem;border-radius:99px;font-weight:500;font-size:.9rem;transition:.25s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(201,164,106,.25)}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid rgba(243,236,224,.35)}
+.hero-art{display:flex;justify-content:center}
+.hero-art svg{width:min(100%,430px);height:auto;filter:drop-shadow(0 40px 60px rgba(0,0,0,.6));animation:float 9s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px) rotate(-1.5deg)}}
+
+/* SECTIONS */
+.section{padding:7rem 6vw;opacity:0;transform:translateY(24px);transition:opacity .9s,transform .9s}
+.section.in{opacity:1;transform:none}
+.section-head{max-width:40rem;margin-bottom:3.5rem}
+.section-head h2,.about h2{font-size:clamp(2.4rem,5vw,3.8rem);margin-bottom:1.2rem}
+.section-head p:not(.eyebrow){color:var(--cream)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:2.6rem 2rem}
+.card .frame{position:relative;aspect-ratio:3/4;border-radius:4px;overflow:hidden;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--bg) 70%,#fff 8%),var(--bg));
+  box-shadow:0 20px 40px rgba(0,0,0,.35);transition:transform .5s}
+.card .frame img{width:100%;height:100%;object-fit:cover}
+.card .dial{width:78%}
+.card:hover .frame{transform:translateY(-6px)}
+.card h3{font-size:1.45rem;margin-top:1.1rem}
+.card p{font-size:.8rem;color:var(--muted);letter-spacing:.06em}
+.badge{position:absolute;top:.8rem;left:.8rem;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;padding:.3rem .7rem;border-radius:99px;background:rgba(15,13,11,.7);backdrop-filter:blur(6px)}
+.badge.dispo{color:#b9e3b0}.badge.vendu{color:var(--muted)}
+
+/* SAISONS */
+.saisons{background:linear-gradient(180deg,transparent,rgba(20,26,36,.7),transparent)}
+.seasons{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-bottom:2.5rem}
+.season{position:relative;aspect-ratio:2/3;border-radius:4px;overflow:hidden;display:grid;place-items:center;background:var(--bg);transition:.4s}
+.season svg{width:80%}.season img{width:100%;height:100%;object-fit:cover}
+.season span{position:absolute;bottom:1rem;left:0;right:0;text-align:center;font-family:var(--serif);font-size:1.6rem;font-style:italic}
+.season:hover{transform:scale(1.02)}
+.link{color:var(--gold);border-bottom:1px solid rgba(201,164,106,.4);padding-bottom:2px;font-size:.92rem}
+
+/* CARNET */
+.carnet{background:var(--paper);color:var(--ink)}
+.carnet .section-head p:not(.eyebrow){color:#4a4136}
+.carnet .eyebrow{color:#9b7a44}
+.ribbon{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));border-top:1px solid #d6cab4}
+.page{display:flex;align-items:baseline;gap:1rem;padding:1.1rem .4rem;border-bottom:1px solid #d6cab4;transition:.25s}
+.page .num{font-size:.72rem;color:#9b7a44;letter-spacing:.1em}
+.page .name{font-family:var(--serif);font-size:1.35rem;flex:1}
+.page .arrow{opacity:0;transition:.25s}
+.page:hover{padding-left:1rem;background:#ebe2d2}.page:hover .arrow{opacity:1}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:5vw;align-items:center;max-width:1100px;margin:auto}
+.about-photo{aspect-ratio:4/5;border-radius:4px;background:linear-gradient(160deg,#2a2219,#0f0d0b);display:grid;place-items:center;border:1px solid rgba(201,164,106,.2);overflow:hidden}
+.about-photo img{width:100%;height:100%;object-fit:cover}
+.about-photo span{font-family:var(--serif);font-size:5rem;color:var(--gold);opacity:.5}
+.about p:not(.eyebrow){color:var(--cream);margin-bottom:1.1rem}
+
+/* REFS */
+.refs{padding-top:3rem}
+.ref-list{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(201,164,106,.18);border:1px solid rgba(201,164,106,.18);max-width:1100px;margin:auto}
+.ref-list li{background:var(--ink);padding:2rem 1.6rem;text-align:center}
+.ref-list strong{display:block;font-family:var(--serif);font-weight:500;font-size:1.5rem}
+.ref-list span{font-size:.8rem;color:var(--muted)}
+
+/* OFFERS */
+.offers{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px}
+.offer{border:1px solid rgba(243,236,224,.14);border-radius:6px;padding:2.4rem 2rem;transition:.3s}
+.offer:hover{border-color:var(--gold)}
+.offer.featured{background:linear-gradient(170deg,rgba(201,164,106,.14),transparent)}
+.offer .tech{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+.offer h3{font-size:2rem;margin:.4rem 0 .2rem}
+.offer .fmt{color:var(--muted);font-size:.85rem}
+.offer .price{font-family:var(--serif);font-size:3rem;margin:1.2rem 0 .6rem;color:var(--paper)}
+.offer .desc{font-size:.9rem;color:var(--cream)}
+.steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;max-width:1100px;color:var(--cream);font-size:.92rem}
+.steps span{display:inline-grid;place-items:center;width:1.9rem;height:1.9rem;border:1px solid var(--gold);color:var(--gold);border-radius:50%;margin-right:.7rem;font-size:.8rem}
+
+/* COMMANDER */
+.commander{text-align:center;padding:8rem 6vw}
+.commander h2{font-size:clamp(2.6rem,6vw,4.6rem);margin-bottom:1rem}
+.commander p{color:var(--cream);max-width:32rem;margin:auto}
+
+/* FOOTER */
+.footer{text-align:center;padding:3rem 6vw 4rem;border-top:1px solid rgba(201,164,106,.15);font-size:.85rem;color:var(--muted)}
+.footer .brand{color:var(--paper);margin-bottom:.3rem}
+.footer a{color:var(--cream)}.footer a:hover{color:var(--gold)}
+.small{font-size:.72rem;margin-top:1rem}
+
+/* MOBILE */
+@media (max-width:860px){
+  .burger{display:block;z-index:2}
+  .links{position:fixed;inset:0;flex-direction:column;justify-content:center;gap:1.8rem;font-size:1.3rem;background:rgba(15,13,11,.97);opacity:0;pointer-events:none;transition:.3s}
+  .links.open{opacity:1;pointer-events:auto}
+  .hero{grid-template-columns:1fr;text-align:left;padding-top:6.5rem;min-height:auto}
+  .hero-art{order:-1}.hero-art svg{width:62%}
+  .section{padding:5rem 6vw}
+  .seasons{grid-template-columns:repeat(2,1fr)}
+  .about-grid,.offers,.steps,.ref-list{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(2,1fr);gap:1.6rem 1rem}
+  .card h3{font-size:1.15rem}
+}
